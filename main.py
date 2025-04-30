@@ -18,7 +18,7 @@ st.set_page_config(
 )
 st.image('assets/macLogo.png', width=300)
 
-st.header('Agente Holambra')
+st.header('Agente HSL')
 st.header(' ')
 
 
@@ -45,7 +45,7 @@ tab_chatbot,  tab_geracao,  tab_resumo = st.tabs([
 
 with tab_chatbot:  
     st.header("Chat Virtual HSL")
-    st.caption("Pergunte qualquer coisa sobre as diretrizes e informações da Holambra")
+    st.caption("Pergunte qualquer coisa sobre as diretrizes e informações do HSL")
     
     # Inicializa o histórico de chat na session_state
     if "messages" not in st.session_state:
@@ -138,7 +138,7 @@ with tab_geracao:
         if st.button("Gerar Especificações", key="gen_visual"):
             with st.spinner('Criando guia de estilo...'):
                 prompt = f"""
-                Você é um designer que trabalha para a Macfor Marketing digital e você deve gerar conteúdo criativo para o cliente Holambra Cooperativa Agroindustrial.
+                Você é um designer que trabalha para a Macfor Marketing digital e você deve gerar conteúdo criativo para o cliente Hospital Sírio Libanês.
 
                 Crie um manual técnico para designers baseado em:
                 Brief: {campanha_brief}
@@ -166,9 +166,7 @@ with tab_geracao:
                 Brief: {campanha_brief}
                 Diretrizes: {conteudo}
 
-                - Quando o usuário fala Holambra, ele está se referindo a Holambra Cooperativa Agroindustrial
-                - NÃO HÁ conexão entre a Holambra Cooperativa Agroindustrial e as flores Holambra
-                - Nunca fale sobre flores Holambra ou cidade Holambra
+
                 
                 Entregar:
                 - 🎯 3 opções de headline
@@ -201,7 +199,7 @@ st.markdown("""
 
 with tab_resumo:
     st.header("Resumo de Textos")
-    st.caption("Resuma textos longos mantendo o alinhamento com as diretrizes da Holambra")
+    st.caption("Resuma textos longos mantendo o alinhamento com as diretrizes do HSL")
     
     # Layout em colunas
     col_original, col_resumo = st.columns(2)
@@ -249,7 +247,7 @@ with tab_resumo:
                         }[nivel_resumo]
                         
                         prompt = f"""
-                        Crie um resumo profissional deste texto para a Holambra Cooperativa Agroindustrial,
+                        Crie um resumo profissional deste texto para O Hospital Sírio Libanês,
                         seguindo rigorosamente estas diretrizes da marca:
                         {conteudo}
                         
@@ -258,7 +256,7 @@ with tab_resumo:
                         - {"Inclua os principais pontos em tópicos" if incluir_pontos else "Formato de texto contínuo"}
                         - {"Mantenha a terminologia técnica específica" if manter_terminologia else "Simplifique a linguagem"}
                         - Priorize informações relevantes para o agronegócio
-                        - Mantenha o tom profissional da Holambra
+                        - Mantenha o tom profissional do HSL
                         - Adapte para o público-alvo da cooperativa
                         
                         Texto para resumir:
@@ -279,7 +277,7 @@ with tab_resumo:
                         st.download_button(
                             "📋 Copiar Resumo",
                             data=resposta.text,
-                            file_name="resumo_holambra.txt",
+                            file_name="resumo_hsl.txt",
                             mime="text/plain"
                         )
                         
