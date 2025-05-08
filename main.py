@@ -812,8 +812,7 @@ with tab_briefing:
                         "## 3. DIRETRIZES DA MARCA",
                         conteudo,
                         "",
-                        "## 4. OBSERVAÇÕES FINAIS",
-                        f"Documento gerado automaticamente pelo sistema Macfor AutoDoc em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+                        
                     ])
                     
                     prompt = "\n".join(prompt_parts)
