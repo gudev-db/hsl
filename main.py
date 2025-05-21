@@ -44,12 +44,13 @@ db_briefings = banco["briefings_hsl"]
 with open('data.txt', 'r') as file:
     conteudo = file.read()
 
-tab_chatbot, tab_aprovacao, tab_geracao, tab_briefing, tab_resumo = st.tabs([
+tab_chatbot, tab_aprovacao, tab_geracao, tab_briefing, tab_resumo, tab_briefing_gerados = st.tabs([
     "💬 Chatbot Hospital Sírio Libanês", 
     "✅ Aprovação de Conteúdo", 
     "✨ Geração de Conteúdo",
     "📋 Geração de Briefing Hospital Sírio Libanês",
-    "📝 Resumo de Textos"
+    "📝 Resumo de Textos",
+    "Briefings Gerados"
 ])
 
 
@@ -857,3 +858,166 @@ with tab_resumo:
                         
                     except Exception as e:
                         st.error(f"Erro ao gerar resumo: {str(e)}")
+    with tab_briefing_gerados:
+        st.header("📚 Briefings Gerados - Hospital Sírio Libanês")
+        st.markdown("---")
+        
+        # Container principal com 2 colunas
+        col_filtros, col_visualizacao = st.columns([1, 3])
+        
+        with col_filtros:
+            st.subheader("Filtros")
+            
+            # Filtro por categoria
+            categoria_selecionada = st.selectbox(
+                "Categoria:",
+                ["Todas"] + list(tipos_briefing.keys()),
+                key="filtro_categoria_bg"
+            )
+            
+            # Filtro por tipo (dinâmico baseado na categoria)
+            if categoria_selecionada == "Todas":
+                tipos_disponiveis = sorted({tipo for sublist in tipos_briefing.values() for tipo in sublist})
+            else:
+                tipos_disponiveis = tipos_briefing[categoria_selecionada]
+            
+            tipo_selecionado = st.selectbox(
+                "Tipo de briefing:",
+                ["Todos"] + tipos_disponiveis,
+                key="filtro_tipo_bg"
+            )
+            
+            # Filtro por período
+            st.markdown("**Período de criação:**")
+            col_data1, col_data2 = st.columns(2)
+            with col_data1:
+                data_inicio = st.date_input(
+                    "De",
+                    value=datetime.datetime.now() - datetime.timedelta(days=30),
+                    key="data_inicio_bg"
+                )
+            with col_data2:
+                data_fim = st.date_input(
+                    "Até",
+                    value=datetime.datetime.now(),
+                    key="data_fim_bg"
+                )
+            
+            # Filtro por responsável
+            responsaveis = collection_briefings.distinct("responsavel")
+            responsavel_selecionado = st.selectbox(
+                "Responsável:",
+                ["Todos"] + sorted(responsaveis),
+                key="filtro_responsavel_bg"
+            )
+            
+            st.markdown("---")
+            st.markdown("**Ações em massa:**")
+            if st.button("🔄 Atualizar Lista", use_container_width=True):
+                st.rerun()
+        
+        with col_visualizacao:
+            st.subheader("Visualização")
+            
+            # Construir query para MongoDB
+            query = {
+                "data_criacao": {
+                    "$gte": datetime.datetime.combine(data_inicio, datetime.time.min),
+                    "$lte": datetime.datetime.combine(data_fim, datetime.time.max)
+                }
+            }
+            
+            if categoria_selecionada != "Todas":
+                query["categoria"] = categoria_selecionada
+            
+            if tipo_selecionado != "Todos":
+                query["tipo"] = tipo_selecionado
+            
+            if responsavel_selecionado != "Todos":
+                query["responsavel"] = responsavel_selecionado
+            
+            # Buscar briefings no MongoDB
+            briefings = list(collection_briefings.find(query).sort("data_criacao", -1))
+            
+            if not briefings:
+                st.info("Nenhum briefing encontrado com os filtros selecionados")
+            else:
+                # Selectbox para navegação rápida
+                briefing_selecionado = st.selectbox(
+                    "Selecione um briefing para visualizar:",
+                    options=[f"{b['tipo']} - {b['nome_projeto']} ({b['data_criacao'].strftime('%d/%m/%Y')})" for b in briefings],
+                    index=0,
+                    key="selectbox_briefings"
+                )
+                
+                # Encontrar o briefing correspondente
+                selected_index = [f"{b['tipo']} - {b['nome_projeto']} ({b['data_criacao'].strftime('%d/%m/%Y')})" for b in briefings].index(briefing_selecionado)
+                briefing = briefings[selected_index]
+                
+                # Exibir briefing
+                with st.container(border=True):
+                    col_header1, col_header2 = st.columns([3, 1])
+                    with col_header1:
+                        st.markdown(f"### {briefing['tipo']} - {briefing['nome_projeto']}")
+                        st.caption(f"**Responsável:** {briefing['responsavel']} | **Data de criação:** {briefing['data_criacao'].strftime('%d/%m/%Y %H:%M')}")
+                        st.caption(f"**Categoria:** {briefing['categoria']} | **Entrega prevista:** {briefing['data_entrega']}")
+                    
+                    with col_header2:
+                        st.download_button(
+                            label="📥 Exportar",
+                            data=briefing['conteudo'],
+                            file_name=f"briefing_{briefing['tipo'].replace(' ', '_')}_{briefing['nome_projeto'].replace(' ', '_')}.md",
+                            mime="text/markdown",
+                            use_container_width=True
+                        )
+                    
+                    st.markdown("---")
+                    
+                    # Exibir conteúdo com tabs
+                    tab_conteudo, tab_metadados = st.tabs(["📝 Conteúdo", "📊 Metadados"])
+                    
+                    with tab_conteudo:
+                        st.markdown(briefing['conteudo'])
+                    
+                    with tab_metadados:
+                        st.json({
+                            "ID": str(briefing['_id']),
+                            "Categoria": briefing['categoria'],
+                            "Tipo": briefing['tipo'],
+                            "Projeto": briefing['nome_projeto'],
+                            "Responsável": briefing['responsavel'],
+                            "Data de criação": briefing['data_criacao'].strftime('%Y-%m-%d %H:%M:%S'),
+                            "Data de entrega": briefing['data_entrega'],
+                            "Campos preenchidos": briefing['campos_preenchidos']
+                        }, expanded=False)
+                
+                # Barra de ações
+                st.markdown("---")
+                col_acao1, col_acao2, col_acao3 = st.columns([1, 1, 2])
+                
+                with col_acao1:
+                    if st.button("✏️ Editar Briefing", use_container_width=True):
+                        st.session_state['editar_briefing_id'] = str(briefing['_id'])
+                        st.switch_page("pages/editar_briefing.py")  # Substitua pelo seu fluxo de edição
+                
+                with col_acao2:
+                    if st.button("🗑️ Excluir Briefing", type="secondary", use_container_width=True):
+                        collection_briefings.delete_one({"_id": briefing['_id']})
+                        st.success("Briefing excluído com sucesso!")
+                        st.rerun()
+                
+                with col_acao3:
+                    st.write("")  # Espaçamento
+    
+    # Estilo adicional
+    st.markdown("""
+    <style>
+        div[data-testid="stExpander"] details {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        div[data-testid="stVerticalBlock"] > div[style*="flex-direction: column"] > div[data-testid="stVerticalBlock"] {
+            border-radius: 8px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
