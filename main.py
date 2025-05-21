@@ -304,37 +304,34 @@ with tab_briefing:
         ]
     }
 
-    
-    
-   
-        # Aba de configuração
+    # Aba de configuração
     tab_new, tab_saved = st.tabs(["Novo Briefing", "Briefings Salvos"])
         
-            with tab_new:
-            # Seleção hierárquica do tipo de briefing
-            categoria = st.selectbox("Categoria:", list(tipos_briefing.keys()))
-            tipo_briefing = st.selectbox("Tipo de Briefing:", tipos_briefing[categoria])
-            
-            # Campos comuns a todos os briefings
-            st.subheader("Informações Básicas")
-            nome_projeto = st.text_input("Nome do Projeto:")
-            responsavel = st.text_input("Responsável pelo Briefing:")
-            data_entrega = st.date_input("Data de Entrega Prevista:")
-            objetivo_geral = st.text_area("Objetivo Geral:")
-            
-            # Seção dinâmica baseada no tipo de briefing
-            st.subheader("Informações Específicas")
-            
-            # Dicionário para armazenar todos os campos
-            campos_briefing = {
-                "basicos": {
-                    "nome_projeto": nome_projeto,
-                    "responsavel": responsavel,
-                    "data_entrega": str(data_entrega),
-                    "objetivo_geral": objetivo_geral
-                },
-                "especificos": {}
-            }
+    with tab_new:
+        # Seleção hierárquica do tipo de briefing
+        categoria = st.selectbox("Categoria:", list(tipos_briefing.keys()))
+        tipo_briefing = st.selectbox("Tipo de Briefing:", tipos_briefing[categoria])
+        
+        # Campos comuns a todos os briefings
+        st.subheader("Informações Básicas")
+        nome_projeto = st.text_input("Nome do Projeto:")
+        responsavel = st.text_input("Responsável pelo Briefing:")
+        data_entrega = st.date_input("Data de Entrega Prevista:")
+        objetivo_geral = st.text_area("Objetivo Geral:")
+        
+        # Seção dinâmica baseada no tipo de briefing
+        st.subheader("Informações Específicas")
+        
+        # Dicionário para armazenar todos os campos
+        campos_briefing = {
+            "basicos": {
+                "nome_projeto": nome_projeto,
+                "responsavel": responsavel,
+                "data_entrega": str(data_entrega),
+                "objetivo_geral": objetivo_geral
+            },
+            "especificos": {}
+        }
             
             # Função para criar campos dinâmicos com seleção
             # Primeiro, vamos modificar a função criar_campo_selecionavel para usar session_state
