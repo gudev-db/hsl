@@ -691,8 +691,8 @@ with col_config:
                                 mime="text/plain"
                             )
                     
-                except Exception as e:
-                        st.error(f"Erro ao gerar briefing: {str(e)}")
+            except Exception as e:
+                st.error(f"Erro ao gerar briefing: {str(e)}")
         
         with tab_saved:
             st.subheader("Briefings Salvos")
