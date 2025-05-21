@@ -1,7 +1,6 @@
 import streamlit as st
-from pptx import Presentation
 import io
-import pdfplumber
+
 import google.generativeai as genai
 import os
 from PIL import Image
