@@ -694,7 +694,7 @@ with tab_briefing:
         
         # Conexão correta com a coleção (ajuste conforme sua configuração)
         # Se você já tem a conexão configurada em outro lugar, mantenha apenas a linha abaixo
-        collection_briefings = mongo_client.briefings_hsl.briefings  # Ajuste aqui
+        collection_briefings = client2.briefings_hsl.briefings  # Ajuste aqui
         
         # Filtros
         col_filtro1, col_filtro2 = st.columns(2)
