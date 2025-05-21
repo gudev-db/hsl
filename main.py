@@ -30,7 +30,13 @@ genai.configure(api_key=gemini_api_key)
 modelo_vision = genai.GenerativeModel("gemini-2.0-flash", generation_config={"temperature": 0.1})
 modelo_texto = genai.GenerativeModel("gemini-1.5-flash")
 
-
+# Conexão com MongoDB
+client2 = MongoClient("mongodb+srv://gustavoromao3345:RqWFPNOJQfInAW1N@cluster0.5iilj.mongodb.net/auto_doc?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE&tlsAllowInvalidCertificates=true")
+db = client2['arquivos_planejamento']
+collection = db['auto_doc']
+banco = client2["arquivos_planejamento"]
+db_clientes = banco["clientes"]  
+db_briefings = banco["briefings_hsl"]  
 
 
 # Carrega diretrizes
@@ -248,10 +254,13 @@ st.markdown("""
 
 
 
-
 with tab_briefing:
     st.header("Gerador de Briefing Hospital Sírio Libanês")
     st.caption("Crie briefings completos para diferentes áreas de atuação da Hospital Sírio Libanês")
+    
+    # Conexão com MongoDB para briefings
+    db_briefings = client2['briefings_hsl']
+    collection_briefings = db_briefings['briefings']
     
     # Tipos de briefing disponíveis organizados por categoria
     tipos_briefing = {
@@ -297,541 +306,418 @@ with tab_briefing:
     col_config, col_preview = st.columns([1, 2])
     
     with col_config:
-        # Seleção hierárquica do tipo de briefing
-        categoria = st.selectbox("Categoria:", list(tipos_briefing.keys()))
-        tipo_briefing = st.selectbox("Tipo de Briefing:", tipos_briefing[categoria])
+        # Aba de configuração
+        tab_new, tab_saved = st.tabs(["Novo Briefing", "Briefings Salvos"])
         
-        # Campos comuns a todos os briefings
-        st.subheader("Informações Básicas")
-        nome_projeto = st.text_input("Nome do Projeto:")
-        responsavel = st.text_input("Responsável pelo Briefing:")
-        data_entrega = st.date_input("Data de Entrega Prevista:")
-        objetivo_geral = st.text_area("Objetivo Geral:")
-        
-        # Seção dinâmica baseada no tipo de briefing
-        st.subheader("Informações Específicas")
-        
-        # ========== SOCIAL ==========
-        if tipo_briefing == "Post único":
-            fotos = st.text_area("Fotos necessárias:")
-            texto = st.text_area("Texto do post:")
-            expectativa = st.text_area("Expectativa de resultado:")
-            tom_voz = st.selectbox("Tom de voz:", ["Institucional", "Inspiracional", "Educativo", "Promocional"])
-            direcionamento_arte = st.text_area("Direcionamento para a arte (KV):")
-            palavras_chave = st.text_area("Palavras/conceitos-chave:")
-            do_donts = st.text_area("Do's and Don'ts:")
-            referencias = st.text_area("Referências:")
-            materiais_extras = st.text_area("Materiais extras:")
-            info_sensiveis = st.text_area("Informações sensíveis:")
-            if st.checkbox("É sobre produtos?"):
-                produtos_destaque = st.text_area("Produtos para destacar:")
-        
-        elif tipo_briefing == "Planejamento Mensal":
-            eventos_mes = st.text_area("Eventos do mês:")
-            datas_comemorativas = st.text_area("Datas/comemorações:")
-            expectativa_mensal = st.text_area("Expectativa de resultados:")
-            planejamento_conteudos = st.text_area("Conteúdos planejados:")
-            produtos_temas = st.text_area("Produtos/temas técnicos:")
-            planejamento_anual = st.file_uploader("Planejamento anual aprovado:")
-            manuais = st.text_area("Manuais de conteúdo disponíveis:")
-        
-        # ========== CRM ==========
-        elif tipo_briefing == "Planejamento de CRM":
-            escopo = st.text_area("Escopo contratado:")
-            ferramenta_crm = st.text_input("Ferramenta de CRM utilizada:")
-            maturidade = st.selectbox("Maturidade de CRM:", ["Iniciante", "Intermediário", "Avançado"])
-            objetivo_crm = st.text_area("Objetivo com CRM:")
-            canais = st.multiselect("Canais disponíveis:", ["Email", "SMS", "WhatsApp", "Mídia Paga"])
-            perfil_empresa = st.radio("Perfil da empresa:", ["B2B", "B2C"])
-            metas = st.text_area("Metas a serem alcançadas:")
-            tamanho_base = st.text_input("Tamanho da base:")
-            segmentacao = st.text_area("Segmentação/público-alvo:")
-            tom_voz = st.text_area("Tom de voz:")
-            fluxos = st.text_area("Fluxos/e-mails para trabalhar:")
-            if st.checkbox("Geração de leads?"):
-                sla = st.text_area("SLA entre marketing e vendas:")
-        
-        elif tipo_briefing == "Fluxo de Nutrição":
-            gatilho = st.text_area("Gatilho de entrada:")
-            asset_relacionado = st.text_area("Asset/evento relacionado:")
-            etapa_funil = st.selectbox("Etapa do funil:", ["Topo", "Meio", "Fundo"])
-            canais_fluxo = st.multiselect("Canais para o fluxo:", ["Email", "SMS", "WhatsApp", "Mídia Paga"])
-            data_ativacao = st.date_input("Data de ativação esperada:")
-            objetivo_fluxo = st.text_area("Objetivo do fluxo:")
-            resultado_esperado = st.text_area("Resultado final esperado:")
-        
-        elif tipo_briefing == "Email Marketing":
-            publico_email = st.text_area("Público e segmentação:")
-            data_disparo = st.date_input("Data de disparo:")
-            horario_preferencial = st.time_input("Horário preferencial:")
-            objetivo_email = st.text_area("Objetivo:")
-            resultado_esperado = st.text_area("Resultado final esperado:")
-            psd_figma = st.file_uploader("Arquivo PSD/Figma do email:")
-            google_doc = st.text_input("Link do Google Doc com conteúdo:")
-            links_videos = st.text_area("Links de vídeos:")
-            ctas = st.text_area("CTAs:")
-        
-        # ========== MÍDIAS ==========
-        elif tipo_briefing == "Campanha de Mídia":
-            periodo_acao = st.text_input("Período da ação:")
-            orcamento = st.number_input("Orçamento (R$):", min_value=0)
-            mecanismo_promocional = st.text_area("Mecanismo promocional:")
-            praca_especifica = st.text_area("Praça específica:")
-            responsavel_criativo = st.radio("Quem fará os criativos:", ["Macfor", "Cliente"])
-            materiais = st.text_area("Materiais (copies e peças criativas):")
-            objetivo_acao = st.text_area("Objetivo da ação:")
-            meta = st.text_area("Meta:")
-            plataformas = st.multiselect("Plataformas:", ["Facebook", "Instagram", "Google Ads", "LinkedIn"])
-            segmentacao = st.text_area("Segmentação:")
-            link_destino = st.text_input("Link de destino:")
-        
-        # ========== TECH ==========
-        elif tipo_briefing == "Manutenção de Site":
-            st.markdown("**Descreva a demanda usando 5W2H:**")
-            what = st.text_area("O que precisa ser feito?")
-            why = st.text_area("Por que é necessário?")
-            where = st.text_area("Onde deve ser implementado?")
-            when = st.text_area("Quando precisa estar pronto?")
-            who = st.text_area("Quem será impactado?")
-            how = st.text_area("Como deve funcionar?")
-            how_much = st.text_area("Qual o esforço estimado?")
-            descricao_alteracao = st.text_area("Descrição detalhada da alteração:")
-            prints = st.file_uploader("Anexar prints (se aplicável):", accept_multiple_files=True)
-            link_referencia = st.text_input("Link de referência:")
-            if st.checkbox("É cliente novo?"):
-                acessos = st.text_area("Acessos (servidor, CMS, etc.):")
-        
-        elif tipo_briefing == "Construção de Site":
-            acessos = st.text_area("Acessos (servidor, nuvens, repositórios, CMS):")
-            dominio = st.text_input("Domínio:")
-            prototipo = st.file_uploader("Protótipo em Figma:")
-            conteudos = st.text_area("Conteúdos (textos, banners, vídeos):")
-            plataforma = st.selectbox("Plataforma:", ["WordPress", "React", "Vue.js", "Outra"])
-            hierarquia = st.text_area("Hierarquia de páginas:")
-            seo = st.checkbox("Incluir otimização SEO?")
-            if seo:
-                palavras_chave = st.text_area("Palavras-chave principais:")
-        
-        elif tipo_briefing == "Landing Page":
-            objetivo_lp = st.text_area("Objetivo da LP:")
-            plataforma = st.text_input("Plataforma de desenvolvimento:")
-            integracao_site = st.radio("Precisa integrar com site existente?", ["Sim", "Não"])
-            dados_coletar = st.text_area("Dados a serem coletados no formulário:")
-            destino_dados = st.text_area("Onde os dados serão gravados:")
-            kv_referencia = st.file_uploader("KV de referência:")
-            conteudos_pagina = st.text_area("Conteúdos da página:")
-            menu = st.text_area("Menu/barra de navegação:")
-            header_footer = st.text_area("Header e Footer:")
-            comunicar = st.text_area("O que deve ser comunicado:")
-            nao_comunicar = st.text_area("O que não deve ser comunicado:")
-            observacoes = st.text_area("Observações:")
-        
-        # ========== ANALYTICS ==========
-        elif tipo_briefing == "Dashboards":
-            st.markdown("**Acessos:**")
-            google_access = st.checkbox("Solicitar acesso Google Analytics")
-            meta_access = st.checkbox("Solicitar acesso Meta Ads")
-            outros_acessos = st.text_area("Outros acessos necessários:")
+        with tab_new:
+            # Seleção hierárquica do tipo de briefing
+            categoria = st.selectbox("Categoria:", list(tipos_briefing.keys()))
+            tipo_briefing = st.selectbox("Tipo de Briefing:", tipos_briefing[categoria])
             
-            st.markdown("**Requisitos do Dashboard:**")
-            okrs = st.text_area("OKRs e metas:")
-            dados_necessarios = st.text_area("Dados que precisam ser exibidos:")
-            tipos_graficos = st.multiselect("Tipos de gráficos preferidos:", 
-                                         ["Barras", "Linhas", "Pizza", "Mapas", "Tabelas"])
-            atualizacao = st.selectbox("Frequência de atualização:", 
-                                    ["Tempo real", "Diária", "Semanal", "Mensal"])
-        
-        # ========== DESIGN ==========
-        elif tipo_briefing == "Social":
-            formato = st.selectbox("Formato:", ["Estático", "Motion"])
-            kv = st.file_uploader("KV a ser seguido:")
-            linha_criativa = st.text_area("Linha criativa:")
-            usar_fotos = st.radio("Usar fotos?", ["Sim", "Não"])
-            referencias = st.text_area("Referências:")
-            identidade_visual = st.text_area("Elementos de identidade visual:")
-            texto_arte = st.text_area("Texto da arte:")
-        
-        elif tipo_briefing == "CRM":
-            st.info("Layouts simples são mais eficientes para CRM!")
-            referencias = st.text_area("Referências visuais:")
-            tipografia = st.text_input("Tipografia preferencial:")
-            ferramenta_envio = st.text_input("Ferramenta de CRM que enviará a arte:")
-            formato_arte = st.selectbox("Formato da arte:", ["Imagem", "HTML"])
-        
-        elif tipo_briefing == "Mídia":
-            formato = st.selectbox("Formato:", ["Horizontal", "Vertical", "Quadrado"])
-            tipo_peca = st.selectbox("Tipo de peça:", ["Arte estática", "Carrossel", "Motion"])
-            direcionamento = st.text_area("Direcionamento de conteúdo:")
-            num_pecas = st.number_input("Número de peças:", min_value=1)
-            publico = st.text_area("Público-alvo:")
-            objetivo = st.text_area("Objetivo:")
-            referencias_concorrentes = st.text_area("Referências de concorrentes:")
-        
-        elif tipo_briefing == "KV/Identidade Visual":
-            info_negocio = st.text_area("Informações do negócio:")
-            referencias = st.text_area("Referências:")
-            restricoes = st.text_area("O que não fazer (cores, elementos proibidos):")
-            manual_anterior = st.file_uploader("Manual de marca anterior:")
-            imagem_transmitir = st.text_area("Qual imagem queremos transmitir?")
-            tema_campanha = st.text_area("Tema da campanha:")
-            publico = st.text_area("Público-alvo:")
-            tom_voz = st.text_area("Tom de voz:")
-            banco_imagens = st.radio("Tipo de imagens:", ["Banco de imagens", "Pessoas reais"])
-            limitacoes = st.text_area("Limitações de uso:")
-        
-        # ========== REDAÇÃO ==========
-        elif tipo_briefing == "Email Marketing":
-            objetivo_email = st.text_area("Objetivo:")
-            produtos = st.text_area("Produtos a serem divulgados:")
-            estrutura = st.text_area("Estrutura desejada:")
-            cta = st.text_area("CTA desejado:")
-            link_cta = st.text_input("Link para o CTA:")
-            parte_campanha = st.radio("Faz parte de campanha maior?", ["Sim", "Não"])
-        
-        elif tipo_briefing == "Site":
-            objetivo_site = st.text_area("Objetivo:")
-            informacoes = st.text_area("Quais informações precisa ter:")
-            links = st.text_area("Links necessários:")
-            wireframe = st.file_uploader("Wireframe do site:")
-            tamanho_texto = st.selectbox("Tamanho do texto:", ["Curto", "Médio", "Longo"])
-            if st.checkbox("É site novo?"):
-                insumos = st.text_area("Insumos sobre a empresa/projeto:")
-        
-        elif tipo_briefing == "Campanha de Mídias":
-            objetivo_campanha = st.text_area("Objetivo:")
-            plataformas = st.multiselect("Plataformas:", ["Facebook", "Instagram", "LinkedIn", "Google"])
-            palavras_chave = st.text_area("Palavras-chave:")
-            tom_voz = st.text_area("Tom de voz:")
-            publico = st.text_area("Público-alvo:")
-            cronograma = st.text_area("Cronograma:")
-        
-        # ========== PLANEJAMENTO ==========
-        elif tipo_briefing == "Relatórios":
-            objetivo_relatorio = st.text_area("Objetivo:")
-            periodo_analise = st.text_area("Período de análise:")
-            granularidade = st.selectbox("Granularidade:", ["Diária", "Semanal", "Mensal", "Trimestral"])
-            metricas = st.text_area("Métricas a serem incluídas:")
-            comparativos = st.text_area("Comparativos desejados:")
-        
-        elif tipo_briefing == "Estratégico":
-            introducao = st.text_area("Introdução sobre a empresa:")
-            orcamento = st.number_input("Orçamento (R$):", min_value=0)
-            publico = st.text_area("Público-alvo:")
-            objetivo_mkt = st.text_area("Objetivo de marketing:")
-            etapas_funil = st.multiselect("Etapas do funil:", ["Topo", "Meio", "Fundo"])
-            canais = st.multiselect("Canais disponíveis:", 
-                                  ["Social", "Email", "Site", "Mídia Paga", "SEO"])
-            produtos = st.text_area("Produtos/portfólio:")
-            metas = st.text_area("Metas e métricas:")
-            concorrentes = st.text_area("Concorrentes:")
-            acessos = st.text_area("Acessos (GA, Meta Ads, etc.):")
-            expectativas = st.text_area("Expectativas de resultados:")
-            materiais = st.text_area("Materiais de apoio:")
-        
-        elif tipo_briefing == "Concorrência":
-            orcamento = st.number_input("Orçamento (R$):", min_value=0)
-            publico = st.text_area("Público-alvo:")
-            objetivo = st.text_area("Objetivo:")
-            etapas_funil = st.multiselect("Etapas do funil:", ["Topo", "Meio", "Fundo"])
-            produtos = st.text_area("Produtos/portfólio:")
-            metas = st.text_area("Metas e métricas:")
-            concorrentes = st.text_area("Concorrentes:")
-            acessos = st.text_area("Acessos (GA, Meta Ads, etc.):")
-            expectativas = st.text_area("Expectativas de resultados:")
-        
-        # Botão para gerar o briefing
-        if st.button("🔄 Gerar Briefing Completo", type="primary"):
-            with st.spinner('Construindo briefing profissional...'):
-                try:
-                    # Construir o prompt com todas as informações coletadas
-                    prompt_parts = [
-                        f"# BRIEFING {tipo_briefing.upper()} - Hospital Sírio Libanês",
-                        f"**Projeto:** {nome_projeto}",
-                        f"**Responsável:** {responsavel}",
-                        f"**Data de Entrega:** {data_entrega}",
-                        "",
-                        "## 1. INFORMAÇÕES BÁSICAS",
-                        f"**Objetivo Geral:** {objetivo_geral}",
-                        "",
-                        "## 2. INFORMAÇÕES ESPECÍFICAS"
-                    ]
-
-                    # Adicionar campos específicos dinamicamente
-                    if tipo_briefing == "Post único":
-                        prompt_parts.extend([
-                            f"### Post único",
-                            f"**Fotos necessárias:** {fotos}",
-                            f"**Texto do post:** {texto}",
-                            f"**Expectativa de resultado:** {expectativa}",
-                            f"**Tom de voz:** {tom_voz}",
-                            f"**Direcionamento para arte:** {direcionamento_arte}",
-                            f"**Palavras-chave:** {palavras_chave}",
-                            f"**Do's and Don'ts:** {do_donts}",
-                            f"**Referências:** {referencias}",
-                            f"**Materiais extras:** {materiais_extras}",
-                            f"**Informações sensíveis:** {info_sensiveis}",
-                            f"**Produtos para destacar:** {produtos_destaque if 'produtos_destaque' in locals() else 'N/A'}"
-                        ])
-                    
-                    elif tipo_briefing == "Planejamento de CRM":
-                        prompt_parts.extend([
-                            f"### Planejamento de CRM",
-                            f"**Escopo contratado:** {escopo}",
-                            f"**Ferramenta de CRM:** {ferramenta_crm}",
-                            f"**Maturidade de CRM:** {maturidade}",
-                            f"**Objetivo com CRM:** {objetivo_crm}",
-                            f"**Canais disponíveis:** {', '.join(canais)}",
-                            f"**Perfil da empresa:** {perfil_empresa}",
-                            f"**Metas:** {metas}",
-                            f"**Tamanho da base:** {tamanho_base}",
-                            f"**Segmentação:** {segmentacao}",
-                            f"**Tom de voz:** {tom_voz}",
-                            f"**Fluxos/e-mails:** {fluxos}",
-                            f"**SLA marketing/vendas:** {sla if 'sla' in locals() else 'N/A'}"
-                        ])
-                    
-                    elif tipo_briefing == "Fluxo de Nutrição":
-                        prompt_parts.extend([
-                            f"### Fluxo de Nutrição",
-                            f"**Gatilho de entrada:** {gatilho}",
-                            f"**Asset/evento relacionado:** {asset_relacionado}",
-                            f"**Etapa do funil:** {etapa_funil}",
-                            f"**Canais:** {', '.join(canais_fluxo)}",
-                            f"**Data de ativação:** {data_ativacao}",
-                            f"**Objetivo:** {objetivo_fluxo}",
-                            f"**Resultado esperado:** {resultado_esperado}"
-                        ])
-
-                    elif tipo_briefing == "Email Marketing":
-                        prompt_parts.extend([
-                            f"### Email Marketing",
-                            f"**Público:** {publico_email}",
-                            f"**Data/horário:** {data_disparo} {horario_preferencial}",
-                            f"**Objetivo:** {objetivo_email}",
-                            f"**Resultado esperado:** {resultado_esperado}",
-                            f"**Arquivos:** {'PSD/Figma anexado' if psd_figma else 'Nenhum'}",
-                            f"**Google Doc:** {google_doc}",
-                            f"**Vídeos:** {links_videos}",
-                            f"**CTAs:** {ctas}"
-                        ])
-
-                    elif tipo_briefing == "Campanha de Mídia":
-                        prompt_parts.extend([
-                            f"### Campanha de Mídia",
-                            f"**Período:** {periodo_acao}",
-                            f"**Orçamento:** R${orcamento}",
-                            f"**Mecanismo promocional:** {mecanismo_promocional}",
-                            f"**Praça específica:** {praca_especifica}",
-                            f"**Responsável criativo:** {responsavel_criativo}",
-                            f"**Materiais:** {materiais}",
-                            f"**Objetivo:** {objetivo_acao}",
-                            f"**Meta:** {meta}",
-                            f"**Plataformas:** {', '.join(plataformas)}",
-                            f"**Segmentação:** {segmentacao}",
-                            f"**Link de destino:** {link_destino}"
-                        ])
-
-                    elif tipo_briefing == "Manutenção de Site":
-                        prompt_parts.extend([
-                            f"### Manutenção de Site (5W2H)",
-                            f"**O que:** {what}",
-                            f"**Por que:** {why}",
-                            f"**Onde:** {where}",
-                            f"**Quando:** {when}",
-                            f"**Quem:** {who}",
-                            f"**Como:** {how}",
-                            f"**Quanto custa:** {how_much}",
-                            f"**Descrição detalhada:** {descricao_alteracao}",
-                            f"**Links/prints:** {link_referencia}",
-                            f"**Acessos:** {acessos if 'acessos' in locals() else 'N/A'}"
-                        ])
-
-                    elif tipo_briefing == "Construção de Site":
-                        prompt_parts.extend([
-                            f"### Construção de Site",
-                            f"**Acessos:** {acessos}",
-                            f"**Domínio:** {dominio}",
-                            f"**Protótipo:** {'Anexado' if prototipo else 'Não fornecido'}",
-                            f"**Conteúdos:** {conteudos}",
-                            f"**Plataforma:** {plataforma}",
-                            f"**Hierarquia:** {hierarquia}",
-                            f"**SEO:** {'Sim' + (f' - Palavras-chave: {palavras_chave}' if 'palavras_chave' in locals() else '') if seo else 'Não'}"
-                        ])
-
-                    elif tipo_briefing == "Landing Page":
-                        prompt_parts.extend([
-                            f"### Landing Page",
-                            f"**Objetivo:** {objetivo_lp}",
-                            f"**Plataforma:** {plataforma}",
-                            f"**Integração com site:** {integracao_site}",
-                            f"**Dados coletados:** {dados_coletar}",
-                            f"**Destino dos dados:** {destino_dados}",
-                            f"**KV referência:** {'Anexado' if kv_referencia else 'Não fornecido'}",
-                            f"**Conteúdos:** {conteudos_pagina}",
-                            f"**Menu:** {menu}",
-                            f"**Header/Footer:** {header_footer}",
-                            f"**Comunicação:** {comunicar}",
-                            f"**Restrições:** {nao_comunicar}",
-                            f"**Observações:** {observacoes}"
-                        ])
-
-                    elif tipo_briefing == "Dashboards":
-                        prompt_parts.extend([
-                            f"### Dashboards",
-                            f"**Acessos solicitados:** {'Google Analytics' if google_access else ''} {'Meta Ads' if meta_access else ''} {outros_acessos}",
-                            f"**OKRs/Metas:** {okrs}",
-                            f"**Dados necessários:** {dados_necessarios}",
-                            f"**Tipos de gráficos:** {', '.join(tipos_graficos)}",
-                            f"**Atualização:** {atualizacao}"
-                        ])
-
-                    elif tipo_briefing == "Social (Design)":
-                        prompt_parts.extend([
-                            f"### Design para Social",
-                            f"**Formato:** {formato}",
-                            f"**KV referência:** {'Anexado' if kv else 'Não fornecido'}",
-                            f"**Linha criativa:** {linha_criativa}",
-                            f"**Fotos:** {usar_fotos}",
-                            f"**Referências:** {referencias}",
-                            f"**Identidade visual:** {identidade_visual}",
-                            f"**Texto da arte:** {texto_arte}"
-                        ])
-
-                    elif tipo_briefing == "CRM (Design)":
-                        prompt_parts.extend([
-                            f"### Design para CRM",
-                            f"**Referências visuais:** {referencias}",
-                            f"**Tipografia:** {tipografia}",
-                            f"**Ferramenta de envio:** {ferramenta_envio}",
-                            f"**Formato da arte:** {formato_arte}"
-                        ])
-
-                    elif tipo_briefing == "Mídia (Design)":
-                        prompt_parts.extend([
-                            f"### Design para Mídia",
-                            f"**Formato:** {formato}",
-                            f"**Tipo de peça:** {tipo_peca}",
-                            f"**Direcionamento:** {direcionamento}",
-                            f"**Número de peças:** {num_pecas}",
-                            f"**Público-alvo:** {publico}",
-                            f"**Objetivo:** {objetivo}",
-                            f"**Referências concorrentes:** {referencias_concorrentes}"
-                        ])
-
-                    elif tipo_briefing == "KV/Identidade Visual":
-                        prompt_parts.extend([
-                            f"### KV/Identidade Visual",
-                            f"**Informações do negócio:** {info_negocio}",
-                            f"**Referências:** {referencias}",
-                            f"**Restrições:** {restricoes}",
-                            f"**Manual anterior:** {'Anexado' if manual_anterior else 'Não fornecido'}",
-                            f"**Imagem a transmitir:** {imagem_transmitir}",
-                            f"**Tema da campanha:** {tema_campanha}",
-                            f"**Público-alvo:** {publico}",
-                            f"**Tom de voz:** {tom_voz}",
-                            f"**Banco de imagens:** {banco_imagens}",
-                            f"**Limitações:** {limitacoes}"
-                        ])
-
-                    elif tipo_briefing == "Email Marketing (Redação)":
-                        prompt_parts.extend([
-                            f"### Redação para Email Marketing",
-                            f"**Objetivo:** {objetivo_email}",
-                            f"**Produtos:** {produtos}",
-                            f"**Estrutura:** {estrutura}",
-                            f"**CTA:** {cta}",
-                            f"**Link CTA:** {link_cta}",
-                            f"**Parte de campanha:** {parte_campanha}"
-                        ])
-
-                    elif tipo_briefing == "Site (Redação)":
-                        prompt_parts.extend([
-                            f"### Redação para Site",
-                            f"**Objetivo:** {objetivo_site}",
-                            f"**Informações necessárias:** {informacoes}",
-                            f"**Links:** {links}",
-                            f"**Wireframe:** {'Anexado' if wireframe else 'Não fornecido'}",
-                            f"**Tamanho do texto:** {tamanho_texto}",
-                            f"**Insumos empresa:** {insumos if 'insumos' in locals() else 'N/A'}"
-                        ])
-
-                    elif tipo_briefing == "Campanha de Mídias (Redação)":
-                        prompt_parts.extend([
-                            f"### Redação para Campanha de Mídias",
-                            f"**Objetivo:** {objetivo_campanha}",
-                            f"**Plataformas:** {', '.join(plataformas)}",
-                            f"**Palavras-chave:** {palavras_chave}",
-                            f"**Tom de voz:** {tom_voz}",
-                            f"**Público-alvo:** {publico}",
-                            f"**Cronograma:** {cronograma}"
-                        ])
-
-                    elif tipo_briefing == "Relatórios":
-                        prompt_parts.extend([
-                            f"### Relatórios",
-                            f"**Objetivo:** {objetivo_relatorio}",
-                            f"**Período de análise:** {periodo_analise}",
-                            f"**Granularidade:** {granularidade}",
-                            f"**Métricas:** {metricas}",
-                            f"**Comparativos:** {comparativos}"
-                        ])
-
-                    elif tipo_briefing == "Estratégico":
-                        prompt_parts.extend([
-                            f"### Planejamento Estratégico",
-                            f"**Introdução:** {introducao}",
-                            f"**Orçamento:** R${orcamento}",
-                            f"**Público-alvo:** {publico}",
-                            f"**Objetivo de marketing:** {objetivo_mkt}",
-                            f"**Etapas do funil:** {', '.join(etapas_funil)}",
-                            f"**Canais:** {', '.join(canais)}",
-                            f"**Produtos/portfólio:** {produtos}",
-                            f"**Metas:** {metas}",
-                            f"**Concorrentes:** {concorrentes}",
-                            f"**Acessos:** {acessos}",
-                            f"**Expectativas:** {expectativas}",
-                            f"**Materiais de apoio:** {materiais}"
-                        ])
-
-                    elif tipo_briefing == "Concorrência":
-                        prompt_parts.extend([
-                            f"### Briefing para Concorrência",
-                            f"**Orçamento:** R${orcamento}",
-                            f"**Público-alvo:** {publico}",
-                            f"**Objetivo:** {objetivo}",
-                            f"**Etapas do funil:** {', '.join(etapas_funil)}",
-                            f"**Produtos/portfólio:** {produtos}",
-                            f"**Metas:** {metas}",
-                            f"**Concorrentes:** {concorrentes}",
-                            f"**Acessos:** {acessos}",
-                            f"**Expectativas:** {expectativas}"
-                        ])
-                    
-                    prompt_parts.extend([
-                        "",
-                        "## 3. DIRETRIZES DA MARCA",
-                        conteudo,
-                        "",
-                        
-                    ])
-                    
-                    prompt = "\n".join(prompt_parts)
-                    resposta = modelo_texto.generate_content(prompt)
-                    
-                    with col_preview:
-                        st.subheader(f"Briefing {tipo_briefing} - {nome_projeto}")
-                        st.markdown(resposta.text)
-                        
-                        st.download_button(
-                            label="📥 Download do Briefing",
-                            data=resposta.text,
-                            file_name=f"briefing_{tipo_briefing.lower().replace(' ', '_')}_{nome_projeto.lower().replace(' ', '_')}.txt",
-                            mime="text/plain"
-                        )
+            # Campos comuns a todos os briefings
+            st.subheader("Informações Básicas")
+            nome_projeto = st.text_input("Nome do Projeto:")
+            responsavel = st.text_input("Responsável pelo Briefing:")
+            data_entrega = st.date_input("Data de Entrega Prevista:")
+            objetivo_geral = st.text_area("Objetivo Geral:")
+            
+            # Seção dinâmica baseada no tipo de briefing
+            st.subheader("Informações Específicas")
+            
+            # Dicionário para armazenar todos os campos
+            campos_briefing = {
+                "basicos": {
+                    "nome_projeto": nome_projeto,
+                    "responsavel": responsavel,
+                    "data_entrega": str(data_entrega),
+                    "objetivo_geral": objetivo_geral
+                },
+                "especificos": {}
+            }
+            
+            # Função para criar campos dinâmicos com seleção
+            def criar_campo_selecionavel(rotulo, tipo="text_area", opcoes=None, padrao=None):
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    if tipo == "text_area":
+                        valor = st.text_area(rotulo, value=padrao or "")
+                    elif tipo == "text_input":
+                        valor = st.text_input(rotulo, value=padrao or "")
+                    elif tipo == "selectbox":
+                        valor = st.selectbox(rotulo, opcoes, index=opcoes.index(padrao) if padrao in opcoes else 0)
+                    elif tipo == "multiselect":
+                        valor = st.multiselect(rotulo, opcoes, default=padrao or [])
+                    elif tipo == "date_input":
+                        valor = st.date_input(rotulo, value=padrao or datetime.date.today())
+                    elif tipo == "number_input":
+                        valor = st.number_input(rotulo, value=padrao or 0)
+                    elif tipo == "file_uploader":
+                        valor = st.file_uploader(rotulo)
+                        return valor  # Retorna direto pois não pode ser salvo no MongoDB
+                with col2:
+                    incluir = st.checkbox("Incluir", value=True, key=f"incluir_{rotulo}")
+                    auto_preencher = st.button("🪄", key=f"auto_{rotulo}", 
+                                             help="Preencher automaticamente com LLM")
                 
-                except Exception as e:
-                    st.error(f"Erro ao gerar briefing: {str(e)}")
+                if auto_preencher:
+                    # Carrega contexto do data.txt
+                    with open("data.txt", "r") as f:
+                        contexto = f.read()
+                    
+                    prompt = f"Com base no seguinte contexto:\n{contexto}\n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês."
+                    resposta = modelo_texto.generate_content(prompt)
+                    valor = resposta.text
+                    st.experimental_rerun()  # Atualiza a interface com o novo valor
+                
+                return valor if incluir else None
+            
+            # ========== SOCIAL ==========
+            if tipo_briefing == "Post único":
+                campos_briefing['especificos']['fotos'] = criar_campo_selecionavel("Fotos necessárias:")
+                campos_briefing['especificos']['texto'] = criar_campo_selecionavel("Texto do post:")
+                campos_briefing['especificos']['expectativa'] = criar_campo_selecionavel("Expectativa de resultado:")
+                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:", "selectbox", 
+                                                                                   ["Institucional", "Inspiracional", "Educativo", "Promocional"])
+                campos_briefing['especificos']['direcionamento_arte'] = criar_campo_selecionavel("Direcionamento para a arte (KV):")
+                campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras/conceitos-chave:")
+                campos_briefing['especificos']['do_donts'] = criar_campo_selecionavel("Do's and Don'ts:")
+                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
+                campos_briefing['especificos']['materiais_extras'] = criar_campo_selecionavel("Materiais extras:")
+                campos_briefing['especificos']['info_sensiveis'] = criar_campo_selecionavel("Informações sensíveis:")
+                
+                if st.checkbox("É sobre produtos?"):
+                    campos_briefing['especificos']['produtos_destaque'] = criar_campo_selecionavel("Produtos para destacar:")
+            
+            elif tipo_briefing == "Planejamento Mensal":
+                campos_briefing['especificos']['eventos_mes'] = criar_campo_selecionavel("Eventos do mês:")
+                campos_briefing['especificos']['datas_comemorativas'] = criar_campo_selecionavel("Datas/comemorações:")
+                campos_briefing['especificos']['expectativa_mensal'] = criar_campo_selecionavel("Expectativa de resultados:")
+                campos_briefing['especificos']['planejamento_conteudos'] = criar_campo_selecionavel("Conteúdos planejados:")
+                campos_briefing['especificos']['produtos_temas'] = criar_campo_selecionavel("Produtos/temas técnicos:")
+                campos_briefing['especificos']['planejamento_anual'] = criar_campo_selecionavel("Planejamento anual aprovado:", "file_uploader")
+                campos_briefing['especificos']['manuais'] = criar_campo_selecionavel("Manuais de conteúdo disponíveis:")
+            
+            # ========== CRM ==========
+            elif tipo_briefing == "Planejamento de CRM":
+                campos_briefing['especificos']['escopo'] = criar_campo_selecionavel("Escopo contratado:")
+                campos_briefing['especificos']['ferramenta_crm'] = criar_campo_selecionavel("Ferramenta de CRM utilizada:")
+                campos_briefing['especificos']['maturidade'] = criar_campo_selecionavel("Maturidade de CRM:", "selectbox", 
+                                                                                     ["Iniciante", "Intermediário", "Avançado"])
+                campos_briefing['especificos']['objetivo_crm'] = criar_campo_selecionavel("Objetivo com CRM:")
+                campos_briefing['especificos']['canais'] = criar_campo_selecionavel("Canais disponíveis:", "multiselect", 
+                                                                                  ["Email", "SMS", "WhatsApp", "Mídia Paga"])
+                campos_briefing['especificos']['perfil_empresa'] = criar_campo_selecionavel("Perfil da empresa:", "selectbox", ["B2B", "B2C"])
+                campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas a serem alcançadas:")
+                campos_briefing['especificos']['tamanho_base'] = criar_campo_selecionavel("Tamanho da base:")
+                campos_briefing['especificos']['segmentacao'] = criar_campo_selecionavel("Segmentação/público-alvo:")
+                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
+                campos_briefing['especificos']['fluxos'] = criar_campo_selecionavel("Fluxos/e-mails para trabalhar:")
+                
+                if st.checkbox("Geração de leads?"):
+                    campos_briefing['especificos']['sla'] = criar_campo_selecionavel("SLA entre marketing e vendas:")
+            
+                        elif tipo_briefing == "Fluxo de Nutrição":
+                campos_briefing['especificos']['gatilho'] = criar_campo_selecionavel("Gatilho de entrada:")
+                campos_briefing['especificos']['asset_relacionado'] = criar_campo_selecionavel("Asset/evento relacionado:")
+                campos_briefing['especificos']['etapa_funil'] = criar_campo_selecionavel("Etapa do funil:", "selectbox", 
+                                                                                      ["Topo", "Meio", "Fundo"])
+                campos_briefing['especificos']['canais_fluxo'] = criar_campo_selecionavel("Canais para o fluxo:", "multiselect", 
+                                                                                       ["Email", "SMS", "WhatsApp", "Mídia Paga"])
+                campos_briefing['especificos']['data_ativacao'] = criar_campo_selecionavel("Data de ativação esperada:", "date_input")
+                campos_briefing['especificos']['objetivo_fluxo'] = criar_campo_selecionavel("Objetivo do fluxo:")
+                campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
 
+            elif tipo_briefing == "Email Marketing":
+                campos_briefing['especificos']['publico_email'] = criar_campo_selecionavel("Público e segmentação:")
+                campos_briefing['especificos']['data_disparo'] = criar_campo_selecionavel("Data de disparo:", "date_input")
+                campos_briefing['especificos']['horario_preferencial'] = criar_campo_selecionavel("Horário preferencial:", "text_input")
+                campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
+                campos_briefing['especificos']['psd_figma'] = criar_campo_selecionavel("Arquivo PSD/Figma do email:", "file_uploader")
+                campos_briefing['especificos']['google_doc'] = criar_campo_selecionavel("Link do Google Doc com conteúdo:", "text_input")
+                campos_briefing['especificos']['links_videos'] = criar_campo_selecionavel("Links de vídeos:")
+                campos_briefing['especificos']['ctas'] = criar_campo_selecionavel("CTAs:")
+
+            elif tipo_briefing == "Campanha de Mídia":
+                campos_briefing['especificos']['periodo_acao'] = criar_campo_selecionavel("Período da ação:", "text_input")
+                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                campos_briefing['especificos']['mecanismo_promocional'] = criar_campo_selecionavel("Mecanismo promocional:")
+                campos_briefing['especificos']['praca_especifica'] = criar_campo_selecionavel("Praça específica:")
+                campos_briefing['especificos']['responsavel_criativo'] = criar_campo_selecionavel("Quem fará os criativos:", "selectbox", 
+                                                                                               ["Macfor", "Cliente"])
+                campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais (copies e peças criativas):")
+                campos_briefing['especificos']['objetivo_acao'] = criar_campo_selecionavel("Objetivo da ação:")
+                campos_briefing['especificos']['meta'] = criar_campo_selecionavel("Meta:")
+                campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
+                                                                                      ["Facebook", "Instagram", "Google Ads", "LinkedIn"])
+                campos_briefing['especificos']['segmentacao'] = criar_campo_selecionavel("Segmentação:")
+                campos_briefing['especificos']['link_destino'] = criar_campo_selecionavel("Link de destino:", "text_input")
+
+            elif tipo_briefing == "Manutenção de Site":
+                st.markdown("**Descreva a demanda usando 5W2H:**")
+                campos_briefing['especificos']['what'] = criar_campo_selecionavel("O que precisa ser feito?")
+                campos_briefing['especificos']['why'] = criar_campo_selecionavel("Por que é necessário?")
+                campos_briefing['especificos']['where'] = criar_campo_selecionavel("Onde deve ser implementado?")
+                campos_briefing['especificos']['when'] = criar_campo_selecionavel("Quando precisa estar pronto?")
+                campos_briefing['especificos']['who'] = criar_campo_selecionavel("Quem será impactado?")
+                campos_briefing['especificos']['how'] = criar_campo_selecionavel("Como deve funcionar?")
+                campos_briefing['especificos']['how_much'] = criar_campo_selecionavel("Qual o esforço estimado?")
+                campos_briefing['especificos']['descricao_alteracao'] = criar_campo_selecionavel("Descrição detalhada da alteração:")
+                campos_briefing['especificos']['prints'] = criar_campo_selecionavel("Anexar prints (se aplicável):", "file_uploader")
+                campos_briefing['especificos']['link_referencia'] = criar_campo_selecionavel("Link de referência:", "text_input")
+                
+                if st.checkbox("É cliente novo?"):
+                    campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, CMS, etc.):")
+
+            elif tipo_briefing == "Construção de Site":
+                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, nuvens, repositórios, CMS):")
+                campos_briefing['especificos']['dominio'] = criar_campo_selecionavel("Domínio:", "text_input")
+                campos_briefing['especificos']['prototipo'] = criar_campo_selecionavel("Protótipo em Figma:", "file_uploader")
+                campos_briefing['especificos']['conteudos'] = criar_campo_selecionavel("Conteúdos (textos, banners, vídeos):")
+                campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma:", "selectbox", 
+                                                                                     ["WordPress", "React", "Vue.js", "Outra"])
+                campos_briefing['especificos']['hierarquia'] = criar_campo_selecionavel("Hierarquia de páginas:")
+                
+                if st.checkbox("Incluir otimização SEO?"):
+                    campos_briefing['especificos']['seo'] = True
+                    campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave principais:")
+                else:
+                    campos_briefing['especificos']['seo'] = False
+
+            elif tipo_briefing == "Landing Page":
+                campos_briefing['especificos']['objetivo_lp'] = criar_campo_selecionavel("Objetivo da LP:")
+                campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma de desenvolvimento:", "text_input")
+                campos_briefing['especificos']['integracao_site'] = criar_campo_selecionavel("Precisa integrar com site existente?", "selectbox", 
+                                                                                          ["Sim", "Não"])
+                campos_briefing['especificos']['dados_coletar'] = criar_campo_selecionavel("Dados a serem coletados no formulário:")
+                campos_briefing['especificos']['destino_dados'] = criar_campo_selecionavel("Onde os dados serão gravados:")
+                campos_briefing['especificos']['kv_referencia'] = criar_campo_selecionavel("KV de referência:", "file_uploader")
+                campos_briefing['especificos']['conteudos_pagina'] = criar_campo_selecionavel("Conteúdos da página:")
+                campos_briefing['especificos']['menu'] = criar_campo_selecionavel("Menu/barra de navegação:")
+                campos_briefing['especificos']['header_footer'] = criar_campo_selecionavel("Header e Footer:")
+                campos_briefing['especificos']['comunicar'] = criar_campo_selecionavel("O que deve ser comunicado:")
+                campos_briefing['especificos']['nao_comunicar'] = criar_campo_selecionavel("O que não deve ser comunicado:")
+                campos_briefing['especificos']['observacoes'] = criar_campo_selecionavel("Observações:")
+
+            elif tipo_briefing == "Dashboards":
+                st.markdown("**Acessos:**")
+                campos_briefing['especificos']['google_access'] = st.checkbox("Solicitar acesso Google Analytics")
+                campos_briefing['especificos']['meta_access'] = st.checkbox("Solicitar acesso Meta Ads")
+                campos_briefing['especificos']['outros_acessos'] = criar_campo_selecionavel("Outros acessos necessários:")
+                
+                st.markdown("**Requisitos do Dashboard:**")
+                campos_briefing['especificos']['okrs'] = criar_campo_selecionavel("OKRs e metas:")
+                campos_briefing['especificos']['dados_necessarios'] = criar_campo_selecionavel("Dados que precisam ser exibidos:")
+                campos_briefing['especificos']['tipos_graficos'] = criar_campo_selecionavel("Tipos de gráficos preferidos:", "multiselect", 
+                                                                                          ["Barras", "Linhas", "Pizza", "Mapas", "Tabelas"])
+                campos_briefing['especificos']['atualizacao'] = criar_campo_selecionavel("Frequência de atualização:", "selectbox", 
+                                                                                      ["Tempo real", "Diária", "Semanal", "Mensal"])
+
+            elif tipo_briefing == "Social (Design)":
+                campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Estático", "Motion"])
+                campos_briefing['especificos']['kv'] = criar_campo_selecionavel("KV a ser seguido:", "file_uploader")
+                campos_briefing['especificos']['linha_criativa'] = criar_campo_selecionavel("Linha criativa:")
+                campos_briefing['especificos']['usar_fotos'] = criar_campo_selecionavel("Usar fotos?", "selectbox", ["Sim", "Não"])
+                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
+                campos_briefing['especificos']['identidade_visual'] = criar_campo_selecionavel("Elementos de identidade visual:")
+                campos_briefing['especificos']['texto_arte'] = criar_campo_selecionavel("Texto da arte:")
+
+            elif tipo_briefing == "CRM (Design)":
+                st.info("Layouts simples são mais eficientes para CRM!")
+                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências visuais:")
+                campos_briefing['especificos']['tipografia'] = criar_campo_selecionavel("Tipografia preferencial:", "text_input")
+                campos_briefing['especificos']['ferramenta_envio'] = criar_campo_selecionavel("Ferramenta de CRM que enviará a arte:", "text_input")
+                campos_briefing['especificos']['formato_arte'] = criar_campo_selecionavel("Formato da arte:", "selectbox", ["Imagem", "HTML"])
+
+            elif tipo_briefing == "Mídia (Design)":
+                campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Horizontal", "Vertical", "Quadrado"])
+                campos_briefing['especificos']['tipo_peca'] = criar_campo_selecionavel("Tipo de peça:", "selectbox", 
+                                                                                     ["Arte estática", "Carrossel", "Motion"])
+                campos_briefing['especificos']['direcionamento'] = criar_campo_selecionavel("Direcionamento de conteúdo:")
+                campos_briefing['especificos']['num_pecas'] = criar_campo_selecionavel("Número de peças:", "number_input", padrao=1)
+                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['referencias_concorrentes'] = criar_campo_selecionavel("Referências de concorrentes:")
+
+            elif tipo_briefing == "KV/Identidade Visual":
+                campos_briefing['especificos']['info_negocio'] = criar_campo_selecionavel("Informações do negócio:")
+                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
+                campos_briefing['especificos']['restricoes'] = criar_campo_selecionavel("O que não fazer (cores, elementos proibidos):")
+                campos_briefing['especificos']['manual_anterior'] = criar_campo_selecionavel("Manual de marca anterior:", "file_uploader")
+                campos_briefing['especificos']['imagem_transmitir'] = criar_campo_selecionavel("Qual imagem queremos transmitir?")
+                campos_briefing['especificos']['tema_campanha'] = criar_campo_selecionavel("Tema da campanha:")
+                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
+                campos_briefing['especificos']['banco_imagens'] = criar_campo_selecionavel("Tipo de imagens:", "selectbox", 
+                                                                                        ["Banco de imagens", "Pessoas reais"])
+                campos_briefing['especificos']['limitacoes'] = criar_campo_selecionavel("Limitações de uso:")
+
+            elif tipo_briefing == "Email Marketing (Redação)":
+                campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos a serem divulgados:")
+                campos_briefing['especificos']['estrutura'] = criar_campo_selecionavel("Estrutura desejada:")
+                campos_briefing['especificos']['cta'] = criar_campo_selecionavel("CTA desejado:")
+                campos_briefing['especificos']['link_cta'] = criar_campo_selecionavel("Link para o CTA:", "text_input")
+                campos_briefing['especificos']['parte_campanha'] = criar_campo_selecionavel("Faz parte de campanha maior?", "selectbox", 
+                                                                                          ["Sim", "Não"])
+
+            elif tipo_briefing == "Site (Redação)":
+                campos_briefing['especificos']['objetivo_site'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['informacoes'] = criar_campo_selecionavel("Quais informações precisa ter:")
+                campos_briefing['especificos']['links'] = criar_campo_selecionavel("Links necessários:")
+                campos_briefing['especificos']['wireframe'] = criar_campo_selecionavel("Wireframe do site:", "file_uploader")
+                campos_briefing['especificos']['tamanho_texto'] = criar_campo_selecionavel("Tamanho do texto:", "selectbox", 
+                                                                                        ["Curto", "Médio", "Longo"])
+                
+                if st.checkbox("É site novo?"):
+                    campos_briefing['especificos']['insumos'] = criar_campo_selecionavel("Insumos sobre a empresa/projeto:")
+
+            elif tipo_briefing == "Campanha de Mídias (Redação)":
+                campos_briefing['especificos']['objetivo_campanha'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
+                                                                                       ["Facebook", "Instagram", "LinkedIn", "Google"])
+                campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave:")
+                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
+                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                campos_briefing['especificos']['cronograma'] = criar_campo_selecionavel("Cronograma:")
+
+            elif tipo_briefing == "Relatórios":
+                campos_briefing['especificos']['objetivo_relatorio'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['periodo_analise'] = criar_campo_selecionavel("Período de análise:")
+                campos_briefing['especificos']['granularidade'] = criar_campo_selecionavel("Granularidade:", "selectbox", 
+                                                                                        ["Diária", "Semanal", "Mensal", "Trimestral"])
+                campos_briefing['especificos']['metricas'] = criar_campo_selecionavel("Métricas a serem incluídas:")
+                campos_briefing['especificos']['comparativos'] = criar_campo_selecionavel("Comparativos desejados:")
+
+            elif tipo_briefing == "Estratégico":
+                campos_briefing['especificos']['introducao'] = criar_campo_selecionavel("Introdução sobre a empresa:")
+                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                campos_briefing['especificos']['objetivo_mkt'] = criar_campo_selecionavel("Objetivo de marketing:")
+                campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
+                                                                                        ["Topo", "Meio", "Fundo"])
+                campos_briefing['especificos']['canais'] = criar_campo_selecionavel("Canais disponíveis:", "multiselect", 
+                                                                                  ["Social", "Email", "Site", "Mídia Paga", "SEO"])
+                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
+                campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
+                campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
+                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
+                campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
+                campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais de apoio:")
+
+            elif tipo_briefing == "Concorrência":
+                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
+                campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
+                                                                                        ["Topo", "Meio", "Fundo"])
+                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
+                campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
+                campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
+                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
+                campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
+            
+            # Botão para gerar o briefing
+            if st.button("🔄 Gerar Briefing Completo", type="primary"):
+                with st.spinner('Construindo briefing profissional...'):
+                    try:
+                        # Remove campos None (não selecionados)
+                        campos_briefing['especificos'] = {k: v for k, v in campos_briefing['especificos'].items() if v is not None}
+                        
+                        # Construir o prompt com todas as informações coletadas
+                        prompt_parts = [
+                            f"# BRIEFING {tipo_briefing.upper()} - Hospital Sírio Libanês",
+                            f"**Projeto:** {campos_briefing['basicos']['nome_projeto']}",
+                            f"**Responsável:** {campos_briefing['basicos']['responsavel']}",
+                            f"**Data de Entrega:** {campos_briefing['basicos']['data_entrega']}",
+                            "",
+                            "## 1. INFORMAÇÕES BÁSICAS",
+                            f"**Objetivo Geral:** {campos_briefing['basicos']['objetivo_geral']}",
+                            "",
+                            "## 2. INFORMAÇÕES ESPECÍFICAS"
+                        ]
+                        
+                        # Adicionar campos específicos
+                        for campo, valor in campos_briefing['especificos'].items():
+                            if isinstance(valor, list):
+                                valor = ", ".join(valor)
+                            prompt_parts.append(f"**{campo.replace('_', ' ').title()}:** {valor}")
+                        
+                        prompt = "\n".join(prompt_parts)
+                        resposta = modelo_texto.generate_content(prompt)
+                        
+                        # Salvar no MongoDB
+                        briefing_data = {
+                            "tipo": tipo_briefing,
+                            "categoria": categoria,
+                            "nome_projeto": campos_briefing['basicos']['nome_projeto'],
+                            "responsavel": campos_briefing['basicos']['responsavel'],
+                            "data_criacao": datetime.datetime.now(),
+                            "data_entrega": campos_briefing['basicos']['data_entrega'],
+                            "conteudo": resposta.text,
+                            "campos_preenchidos": campos_briefing
+                        }
+                        collection_briefings.insert_one(briefing_data)
+                        
+                        with col_preview:
+                            st.subheader(f"Briefing {tipo_briefing} - {campos_briefing['basicos']['nome_projeto']}")
+                            st.markdown(resposta.text)
+                            
+                            st.download_button(
+                                label="📥 Download do Briefing",
+                                data=resposta.text,
+                                file_name=f"briefing_{tipo_briefing.lower().replace(' ', '_')}_{campos_briefing['basicos']['nome_projeto'].lower().replace(' ', '_')}.txt",
+                                mime="text/plain"
+                            )
+                    
+                    except Exception as e:
+                        st.error(f"Erro ao gerar briefing: {str(e)}")
+        
+        with tab_saved:
+            st.subheader("Briefings Salvos")
+            
+            # Filtros
+            col_filtro1, col_filtro2 = st.columns(2)
+            with col_filtro1:
+                filtro_categoria = st.selectbox("Filtrar por categoria:", ["Todos"] + list(tipos_briefing.keys()))
+            with col_filtro2:
+                if filtro_categoria == "Todos":
+                    tipos_disponiveis = [item for sublist in tipos_briefing.values() for item in sublist]
+                    filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_disponiveis)
+                else:
+                    filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_briefing[filtro_categoria])
+            
+            # Construir query para MongoDB
+            query = {}
+            if filtro_categoria != "Todos":
+                query["categoria"] = filtro_categoria
+            if filtro_tipo != "Todos":
+                query["tipo"] = filtro_tipo
+            
+            # Buscar briefings
+            briefings_salvos = list(collection_briefings.find(query).sort("data_criacao", -1).limit(50)
+            
+            if not briefings_salvos:
+                st.info("Nenhum briefing encontrado com os filtros selecionados")
+            else:
+                for briefing in briefings_salvos:
+                    with st.expander(f"{briefing['tipo']} - {briefing['nome_projeto']} ({briefing['data_criacao'].strftime('%d/%m/%Y')})"):
+                        st.markdown(briefing['conteudo'])
+                        
+                        col1, col2 = st.columns([4, 1])
+                        with col1:
+                            st.download_button(
+                                label="📥 Download",
+                                data=briefing['conteudo'],
+                                file_name=f"briefing_{briefing['tipo'].lower().replace(' ', '_')}_{briefing['nome_projeto'].lower().replace(' ', '_')}.txt",
+                                mime="text/plain",
+                                key=f"dl_{briefing['_id']}"
+                            )
+                        with col2:
+                            if st.button("🗑️", key=f"del_{briefing['_id']}"):
+                                collection_briefings.delete_one({"_id": briefing['_id']})
+                                st.experimental_rerun()
+    
     with col_preview:
         st.subheader("Pré-visualização do Briefing")
         if 'resposta' in locals():
@@ -856,6 +742,10 @@ st.markdown("""
         padding: 15px;
         border: 1px dashed #ccc;
         border-radius: 5px;
+    }
+    button[title="Preencher automaticamente com LLM"] {
+        padding: 0 5px !important;
+        min-width: 30px !important;
     }
 </style>
 """, unsafe_allow_html=True)
