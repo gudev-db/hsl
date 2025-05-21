@@ -690,56 +690,56 @@ with tab_briefing:
                     st.error(f"Erro ao gerar briefing")
 
     with tab_saved:
-    st.subheader("Briefings Salvos")
-    
-    # Conexão correta com a coleção (ajuste conforme sua configuração)
-    # Se você já tem a conexão configurada em outro lugar, mantenha apenas a linha abaixo
-    collection_briefings = mongo_client.briefings_hsl.briefings  # Ajuste aqui
-    
-    # Filtros
-    col_filtro1, col_filtro2 = st.columns(2)
-    with col_filtro1:
-        filtro_categoria = st.selectbox("Filtrar por categoria:", ["Todos"] + list(tipos_briefing.keys()))
-    with col_filtro2:
-        if filtro_categoria == "Todos":
-            tipos_disponiveis = [item for sublist in tipos_briefing.values() for item in sublist]
-            filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_disponiveis)
+        st.subheader("Briefings Salvos")
+        
+        # Conexão correta com a coleção (ajuste conforme sua configuração)
+        # Se você já tem a conexão configurada em outro lugar, mantenha apenas a linha abaixo
+        collection_briefings = mongo_client.briefings_hsl.briefings  # Ajuste aqui
+        
+        # Filtros
+        col_filtro1, col_filtro2 = st.columns(2)
+        with col_filtro1:
+            filtro_categoria = st.selectbox("Filtrar por categoria:", ["Todos"] + list(tipos_briefing.keys()))
+        with col_filtro2:
+            if filtro_categoria == "Todos":
+                tipos_disponiveis = [item for sublist in tipos_briefing.values() for item in sublist]
+                filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_disponiveis)
+            else:
+                filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_briefing[filtro_categoria])
+        
+        # Construir query para MongoDB
+        query = {}
+        if filtro_categoria != "Todos":
+            query["categoria"] = filtro_categoria
+        if filtro_tipo != "Todos":
+            query["tipo"] = filtro_tipo
+        
+        # Buscar briefings - adicionei ordenação por data decrescente
+        briefings_salvos = list(collection_briefings.find(query).sort("data_criacao", -1).limit(50))
+        
+        # Debug: mostra quantos documentos foram encontrados
+        st.caption(f"Documentos encontrados: {len(briefings_salvos)}")
+        
+        if not briefings_salvos:
+            st.info("Nenhum briefing encontrado com os filtros selecionados")
         else:
-            filtro_tipo = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_briefing[filtro_categoria])
-    
-    # Construir query para MongoDB
-    query = {}
-    if filtro_categoria != "Todos":
-        query["categoria"] = filtro_categoria
-    if filtro_tipo != "Todos":
-        query["tipo"] = filtro_tipo
-    
-    # Buscar briefings - adicionei ordenação por data decrescente
-    briefings_salvos = list(collection_briefings.find(query).sort("data_criacao", -1).limit(50))
-    
-    # Debug: mostra quantos documentos foram encontrados
-    st.caption(f"Documentos encontrados: {len(briefings_salvos)}")
-    
-    if not briefings_salvos:
-        st.info("Nenhum briefing encontrado com os filtros selecionados")
-    else:
-        for briefing in briefings_salvos:
-            with st.expander(f"{briefing['tipo']} - {briefing['nome_projeto']} ({briefing['data_criacao'].strftime('%d/%m/%Y')})"):
-                st.markdown(briefing['conteudo'])
-                
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    st.download_button(
-                        label="📥 Download",
-                        data=briefing['conteudo'],
-                        file_name=f"briefing_{briefing['tipo'].lower().replace(' ', '_')}_{briefing['nome_projeto'].lower().replace(' ', '_')}.txt",
-                        mime="text/plain",
-                        key=f"dl_{briefing['_id']}"
-                    )
-                with col2:
-                    if st.button("🗑️", key=f"del_{briefing['_id']}"):
-                        collection_briefings.delete_one({"_id": briefing['_id']})
-                        st.rerun()
+            for briefing in briefings_salvos:
+                with st.expander(f"{briefing['tipo']} - {briefing['nome_projeto']} ({briefing['data_criacao'].strftime('%d/%m/%Y')})"):
+                    st.markdown(briefing['conteudo'])
+                    
+                    col1, col2 = st.columns([4, 1])
+                    with col1:
+                        st.download_button(
+                            label="📥 Download",
+                            data=briefing['conteudo'],
+                            file_name=f"briefing_{briefing['tipo'].lower().replace(' ', '_')}_{briefing['nome_projeto'].lower().replace(' ', '_')}.txt",
+                            mime="text/plain",
+                            key=f"dl_{briefing['_id']}"
+                        )
+                    with col2:
+                        if st.button("🗑️", key=f"del_{briefing['_id']}"):
+                            collection_briefings.delete_one({"_id": briefing['_id']})
+                            st.rerun()
 with tab_resumo:
     st.header("Resumo de Textos")
     st.caption("Resuma textos longos mantendo o alinhamento com as diretrizes da Hospital Sírio Libanês")
