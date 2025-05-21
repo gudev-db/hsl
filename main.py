@@ -739,12 +739,12 @@ with col_config:
                                 collection_briefings.delete_one({"_id": briefing['_id']})
                                 st.rerun()
     
-    with col_preview:
-        st.subheader("Pré-visualização do Briefing")
-        if 'resposta' in locals():
-            st.markdown(resposta.text)
-        else:
-            st.info("Preencha os campos e clique em 'Gerar Briefing' para visualizar aqui")
+       
+            st.subheader("Pré-visualização do Briefing")
+            if 'resposta' in locals():
+                st.markdown(resposta.text)
+            else:
+                st.info("Preencha os campos e clique em 'Gerar Briefing' para visualizar aqui")
 
 # Estilização adicional
 st.markdown("""
