@@ -681,18 +681,18 @@ with col_config:
                         collection_briefings.insert_one(briefing_data)
                         
                     
-                st.subheader(f"Briefing {tipo_briefing} - {campos_briefing['basicos']['nome_projeto']}")
-                st.markdown(resposta.text)
+                        st.subheader(f"Briefing {tipo_briefing} - {campos_briefing['basicos']['nome_projeto']}")
+                        st.markdown(resposta.text)
+                                    
+                        st.download_button(
+                                        label="📥 Download do Briefing",
+                                        data=resposta.text,
+                                        file_name=f"briefing_{tipo_briefing.lower().replace(' ', '_')}_{campos_briefing['basicos']['nome_projeto'].lower().replace(' ', '_')}.txt",
+                                        mime="text/plain"
+                                    )
                             
-                st.download_button(
-                                label="📥 Download do Briefing",
-                                data=resposta.text,
-                                file_name=f"briefing_{tipo_briefing.lower().replace(' ', '_')}_{campos_briefing['basicos']['nome_projeto'].lower().replace(' ', '_')}.txt",
-                                mime="text/plain"
-                            )
-                    
-            except Exception as e:
-                st.error(f"Erro ao gerar briefing: {str(e)}")
+                    except Exception as e:
+                        st.error(f"Erro ao gerar briefing: {str(e)}")
         
         with tab_saved:
             st.subheader("Briefings Salvos")
