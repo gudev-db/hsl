@@ -49,7 +49,7 @@ tab_chatbot, tab_aprovacao, tab_geracao, tab_briefing,  tab_resumo = st.tabs([
     "✅ Aprovação de Conteúdo", 
     "✨ Geração de Conteúdo",
     "📋 Geração de Briefing Hospital Sírio Libanês",  
-    "📋 Briefings Gerados",
+   
     "📝 Resumo de Textos",
 ])
 
