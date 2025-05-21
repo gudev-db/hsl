@@ -418,206 +418,206 @@ with tab_briefing:
                 if st.checkbox("Geração de leads?"):
                     campos_briefing['especificos']['sla'] = criar_campo_selecionavel("SLA entre marketing e vendas:")
             
-                        elif tipo_briefing == "Fluxo de Nutrição":
-                campos_briefing['especificos']['gatilho'] = criar_campo_selecionavel("Gatilho de entrada:")
-                campos_briefing['especificos']['asset_relacionado'] = criar_campo_selecionavel("Asset/evento relacionado:")
-                campos_briefing['especificos']['etapa_funil'] = criar_campo_selecionavel("Etapa do funil:", "selectbox", 
-                                                                                      ["Topo", "Meio", "Fundo"])
-                campos_briefing['especificos']['canais_fluxo'] = criar_campo_selecionavel("Canais para o fluxo:", "multiselect", 
-                                                                                       ["Email", "SMS", "WhatsApp", "Mídia Paga"])
-                campos_briefing['especificos']['data_ativacao'] = criar_campo_selecionavel("Data de ativação esperada:", "date_input")
-                campos_briefing['especificos']['objetivo_fluxo'] = criar_campo_selecionavel("Objetivo do fluxo:")
-                campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
-
-            elif tipo_briefing == "Email Marketing":
-                campos_briefing['especificos']['publico_email'] = criar_campo_selecionavel("Público e segmentação:")
-                campos_briefing['especificos']['data_disparo'] = criar_campo_selecionavel("Data de disparo:", "date_input")
-                campos_briefing['especificos']['horario_preferencial'] = criar_campo_selecionavel("Horário preferencial:", "text_input")
-                campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
-                campos_briefing['especificos']['psd_figma'] = criar_campo_selecionavel("Arquivo PSD/Figma do email:", "file_uploader")
-                campos_briefing['especificos']['google_doc'] = criar_campo_selecionavel("Link do Google Doc com conteúdo:", "text_input")
-                campos_briefing['especificos']['links_videos'] = criar_campo_selecionavel("Links de vídeos:")
-                campos_briefing['especificos']['ctas'] = criar_campo_selecionavel("CTAs:")
-
-            elif tipo_briefing == "Campanha de Mídia":
-                campos_briefing['especificos']['periodo_acao'] = criar_campo_selecionavel("Período da ação:", "text_input")
-                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
-                campos_briefing['especificos']['mecanismo_promocional'] = criar_campo_selecionavel("Mecanismo promocional:")
-                campos_briefing['especificos']['praca_especifica'] = criar_campo_selecionavel("Praça específica:")
-                campos_briefing['especificos']['responsavel_criativo'] = criar_campo_selecionavel("Quem fará os criativos:", "selectbox", 
-                                                                                               ["Macfor", "Cliente"])
-                campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais (copies e peças criativas):")
-                campos_briefing['especificos']['objetivo_acao'] = criar_campo_selecionavel("Objetivo da ação:")
-                campos_briefing['especificos']['meta'] = criar_campo_selecionavel("Meta:")
-                campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
-                                                                                      ["Facebook", "Instagram", "Google Ads", "LinkedIn"])
-                campos_briefing['especificos']['segmentacao'] = criar_campo_selecionavel("Segmentação:")
-                campos_briefing['especificos']['link_destino'] = criar_campo_selecionavel("Link de destino:", "text_input")
-
-            elif tipo_briefing == "Manutenção de Site":
-                st.markdown("**Descreva a demanda usando 5W2H:**")
-                campos_briefing['especificos']['what'] = criar_campo_selecionavel("O que precisa ser feito?")
-                campos_briefing['especificos']['why'] = criar_campo_selecionavel("Por que é necessário?")
-                campos_briefing['especificos']['where'] = criar_campo_selecionavel("Onde deve ser implementado?")
-                campos_briefing['especificos']['when'] = criar_campo_selecionavel("Quando precisa estar pronto?")
-                campos_briefing['especificos']['who'] = criar_campo_selecionavel("Quem será impactado?")
-                campos_briefing['especificos']['how'] = criar_campo_selecionavel("Como deve funcionar?")
-                campos_briefing['especificos']['how_much'] = criar_campo_selecionavel("Qual o esforço estimado?")
-                campos_briefing['especificos']['descricao_alteracao'] = criar_campo_selecionavel("Descrição detalhada da alteração:")
-                campos_briefing['especificos']['prints'] = criar_campo_selecionavel("Anexar prints (se aplicável):", "file_uploader")
-                campos_briefing['especificos']['link_referencia'] = criar_campo_selecionavel("Link de referência:", "text_input")
-                
-                if st.checkbox("É cliente novo?"):
-                    campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, CMS, etc.):")
-
-            elif tipo_briefing == "Construção de Site":
-                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, nuvens, repositórios, CMS):")
-                campos_briefing['especificos']['dominio'] = criar_campo_selecionavel("Domínio:", "text_input")
-                campos_briefing['especificos']['prototipo'] = criar_campo_selecionavel("Protótipo em Figma:", "file_uploader")
-                campos_briefing['especificos']['conteudos'] = criar_campo_selecionavel("Conteúdos (textos, banners, vídeos):")
-                campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma:", "selectbox", 
-                                                                                     ["WordPress", "React", "Vue.js", "Outra"])
-                campos_briefing['especificos']['hierarquia'] = criar_campo_selecionavel("Hierarquia de páginas:")
-                
-                if st.checkbox("Incluir otimização SEO?"):
-                    campos_briefing['especificos']['seo'] = True
-                    campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave principais:")
-                else:
-                    campos_briefing['especificos']['seo'] = False
-
-            elif tipo_briefing == "Landing Page":
-                campos_briefing['especificos']['objetivo_lp'] = criar_campo_selecionavel("Objetivo da LP:")
-                campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma de desenvolvimento:", "text_input")
-                campos_briefing['especificos']['integracao_site'] = criar_campo_selecionavel("Precisa integrar com site existente?", "selectbox", 
-                                                                                          ["Sim", "Não"])
-                campos_briefing['especificos']['dados_coletar'] = criar_campo_selecionavel("Dados a serem coletados no formulário:")
-                campos_briefing['especificos']['destino_dados'] = criar_campo_selecionavel("Onde os dados serão gravados:")
-                campos_briefing['especificos']['kv_referencia'] = criar_campo_selecionavel("KV de referência:", "file_uploader")
-                campos_briefing['especificos']['conteudos_pagina'] = criar_campo_selecionavel("Conteúdos da página:")
-                campos_briefing['especificos']['menu'] = criar_campo_selecionavel("Menu/barra de navegação:")
-                campos_briefing['especificos']['header_footer'] = criar_campo_selecionavel("Header e Footer:")
-                campos_briefing['especificos']['comunicar'] = criar_campo_selecionavel("O que deve ser comunicado:")
-                campos_briefing['especificos']['nao_comunicar'] = criar_campo_selecionavel("O que não deve ser comunicado:")
-                campos_briefing['especificos']['observacoes'] = criar_campo_selecionavel("Observações:")
-
-            elif tipo_briefing == "Dashboards":
-                st.markdown("**Acessos:**")
-                campos_briefing['especificos']['google_access'] = st.checkbox("Solicitar acesso Google Analytics")
-                campos_briefing['especificos']['meta_access'] = st.checkbox("Solicitar acesso Meta Ads")
-                campos_briefing['especificos']['outros_acessos'] = criar_campo_selecionavel("Outros acessos necessários:")
-                
-                st.markdown("**Requisitos do Dashboard:**")
-                campos_briefing['especificos']['okrs'] = criar_campo_selecionavel("OKRs e metas:")
-                campos_briefing['especificos']['dados_necessarios'] = criar_campo_selecionavel("Dados que precisam ser exibidos:")
-                campos_briefing['especificos']['tipos_graficos'] = criar_campo_selecionavel("Tipos de gráficos preferidos:", "multiselect", 
-                                                                                          ["Barras", "Linhas", "Pizza", "Mapas", "Tabelas"])
-                campos_briefing['especificos']['atualizacao'] = criar_campo_selecionavel("Frequência de atualização:", "selectbox", 
-                                                                                      ["Tempo real", "Diária", "Semanal", "Mensal"])
-
-            elif tipo_briefing == "Social (Design)":
-                campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Estático", "Motion"])
-                campos_briefing['especificos']['kv'] = criar_campo_selecionavel("KV a ser seguido:", "file_uploader")
-                campos_briefing['especificos']['linha_criativa'] = criar_campo_selecionavel("Linha criativa:")
-                campos_briefing['especificos']['usar_fotos'] = criar_campo_selecionavel("Usar fotos?", "selectbox", ["Sim", "Não"])
-                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
-                campos_briefing['especificos']['identidade_visual'] = criar_campo_selecionavel("Elementos de identidade visual:")
-                campos_briefing['especificos']['texto_arte'] = criar_campo_selecionavel("Texto da arte:")
-
-            elif tipo_briefing == "CRM (Design)":
-                st.info("Layouts simples são mais eficientes para CRM!")
-                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências visuais:")
-                campos_briefing['especificos']['tipografia'] = criar_campo_selecionavel("Tipografia preferencial:", "text_input")
-                campos_briefing['especificos']['ferramenta_envio'] = criar_campo_selecionavel("Ferramenta de CRM que enviará a arte:", "text_input")
-                campos_briefing['especificos']['formato_arte'] = criar_campo_selecionavel("Formato da arte:", "selectbox", ["Imagem", "HTML"])
-
-            elif tipo_briefing == "Mídia (Design)":
-                campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Horizontal", "Vertical", "Quadrado"])
-                campos_briefing['especificos']['tipo_peca'] = criar_campo_selecionavel("Tipo de peça:", "selectbox", 
-                                                                                     ["Arte estática", "Carrossel", "Motion"])
-                campos_briefing['especificos']['direcionamento'] = criar_campo_selecionavel("Direcionamento de conteúdo:")
-                campos_briefing['especificos']['num_pecas'] = criar_campo_selecionavel("Número de peças:", "number_input", padrao=1)
-                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
-                campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['referencias_concorrentes'] = criar_campo_selecionavel("Referências de concorrentes:")
-
-            elif tipo_briefing == "KV/Identidade Visual":
-                campos_briefing['especificos']['info_negocio'] = criar_campo_selecionavel("Informações do negócio:")
-                campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
-                campos_briefing['especificos']['restricoes'] = criar_campo_selecionavel("O que não fazer (cores, elementos proibidos):")
-                campos_briefing['especificos']['manual_anterior'] = criar_campo_selecionavel("Manual de marca anterior:", "file_uploader")
-                campos_briefing['especificos']['imagem_transmitir'] = criar_campo_selecionavel("Qual imagem queremos transmitir?")
-                campos_briefing['especificos']['tema_campanha'] = criar_campo_selecionavel("Tema da campanha:")
-                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
-                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
-                campos_briefing['especificos']['banco_imagens'] = criar_campo_selecionavel("Tipo de imagens:", "selectbox", 
-                                                                                        ["Banco de imagens", "Pessoas reais"])
-                campos_briefing['especificos']['limitacoes'] = criar_campo_selecionavel("Limitações de uso:")
-
-            elif tipo_briefing == "Email Marketing (Redação)":
-                campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos a serem divulgados:")
-                campos_briefing['especificos']['estrutura'] = criar_campo_selecionavel("Estrutura desejada:")
-                campos_briefing['especificos']['cta'] = criar_campo_selecionavel("CTA desejado:")
-                campos_briefing['especificos']['link_cta'] = criar_campo_selecionavel("Link para o CTA:", "text_input")
-                campos_briefing['especificos']['parte_campanha'] = criar_campo_selecionavel("Faz parte de campanha maior?", "selectbox", 
-                                                                                          ["Sim", "Não"])
-
-            elif tipo_briefing == "Site (Redação)":
-                campos_briefing['especificos']['objetivo_site'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['informacoes'] = criar_campo_selecionavel("Quais informações precisa ter:")
-                campos_briefing['especificos']['links'] = criar_campo_selecionavel("Links necessários:")
-                campos_briefing['especificos']['wireframe'] = criar_campo_selecionavel("Wireframe do site:", "file_uploader")
-                campos_briefing['especificos']['tamanho_texto'] = criar_campo_selecionavel("Tamanho do texto:", "selectbox", 
-                                                                                        ["Curto", "Médio", "Longo"])
-                
-                if st.checkbox("É site novo?"):
-                    campos_briefing['especificos']['insumos'] = criar_campo_selecionavel("Insumos sobre a empresa/projeto:")
-
-            elif tipo_briefing == "Campanha de Mídias (Redação)":
-                campos_briefing['especificos']['objetivo_campanha'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
-                                                                                       ["Facebook", "Instagram", "LinkedIn", "Google"])
-                campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave:")
-                campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
-                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
-                campos_briefing['especificos']['cronograma'] = criar_campo_selecionavel("Cronograma:")
-
-            elif tipo_briefing == "Relatórios":
-                campos_briefing['especificos']['objetivo_relatorio'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['periodo_analise'] = criar_campo_selecionavel("Período de análise:")
-                campos_briefing['especificos']['granularidade'] = criar_campo_selecionavel("Granularidade:", "selectbox", 
-                                                                                        ["Diária", "Semanal", "Mensal", "Trimestral"])
-                campos_briefing['especificos']['metricas'] = criar_campo_selecionavel("Métricas a serem incluídas:")
-                campos_briefing['especificos']['comparativos'] = criar_campo_selecionavel("Comparativos desejados:")
-
-            elif tipo_briefing == "Estratégico":
-                campos_briefing['especificos']['introducao'] = criar_campo_selecionavel("Introdução sobre a empresa:")
-                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
-                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
-                campos_briefing['especificos']['objetivo_mkt'] = criar_campo_selecionavel("Objetivo de marketing:")
-                campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
-                                                                                        ["Topo", "Meio", "Fundo"])
-                campos_briefing['especificos']['canais'] = criar_campo_selecionavel("Canais disponíveis:", "multiselect", 
-                                                                                  ["Social", "Email", "Site", "Mídia Paga", "SEO"])
-                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
-                campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
-                campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
-                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
-                campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
-                campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais de apoio:")
-
-            elif tipo_briefing == "Concorrência":
-                campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
-                campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
-                campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
-                campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
-                                                                                        ["Topo", "Meio", "Fundo"])
-                campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
-                campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
-                campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
-                campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
-                campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
+                elif tipo_briefing == "Fluxo de Nutrição":
+                    campos_briefing['especificos']['gatilho'] = criar_campo_selecionavel("Gatilho de entrada:")
+                    campos_briefing['especificos']['asset_relacionado'] = criar_campo_selecionavel("Asset/evento relacionado:")
+                    campos_briefing['especificos']['etapa_funil'] = criar_campo_selecionavel("Etapa do funil:", "selectbox", 
+                                                                                          ["Topo", "Meio", "Fundo"])
+                    campos_briefing['especificos']['canais_fluxo'] = criar_campo_selecionavel("Canais para o fluxo:", "multiselect", 
+                                                                                           ["Email", "SMS", "WhatsApp", "Mídia Paga"])
+                    campos_briefing['especificos']['data_ativacao'] = criar_campo_selecionavel("Data de ativação esperada:", "date_input")
+                    campos_briefing['especificos']['objetivo_fluxo'] = criar_campo_selecionavel("Objetivo do fluxo:")
+                    campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
+    
+                elif tipo_briefing == "Email Marketing":
+                    campos_briefing['especificos']['publico_email'] = criar_campo_selecionavel("Público e segmentação:")
+                    campos_briefing['especificos']['data_disparo'] = criar_campo_selecionavel("Data de disparo:", "date_input")
+                    campos_briefing['especificos']['horario_preferencial'] = criar_campo_selecionavel("Horário preferencial:", "text_input")
+                    campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['resultado_esperado'] = criar_campo_selecionavel("Resultado final esperado:")
+                    campos_briefing['especificos']['psd_figma'] = criar_campo_selecionavel("Arquivo PSD/Figma do email:", "file_uploader")
+                    campos_briefing['especificos']['google_doc'] = criar_campo_selecionavel("Link do Google Doc com conteúdo:", "text_input")
+                    campos_briefing['especificos']['links_videos'] = criar_campo_selecionavel("Links de vídeos:")
+                    campos_briefing['especificos']['ctas'] = criar_campo_selecionavel("CTAs:")
+    
+                elif tipo_briefing == "Campanha de Mídia":
+                    campos_briefing['especificos']['periodo_acao'] = criar_campo_selecionavel("Período da ação:", "text_input")
+                    campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                    campos_briefing['especificos']['mecanismo_promocional'] = criar_campo_selecionavel("Mecanismo promocional:")
+                    campos_briefing['especificos']['praca_especifica'] = criar_campo_selecionavel("Praça específica:")
+                    campos_briefing['especificos']['responsavel_criativo'] = criar_campo_selecionavel("Quem fará os criativos:", "selectbox", 
+                                                                                                   ["Macfor", "Cliente"])
+                    campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais (copies e peças criativas):")
+                    campos_briefing['especificos']['objetivo_acao'] = criar_campo_selecionavel("Objetivo da ação:")
+                    campos_briefing['especificos']['meta'] = criar_campo_selecionavel("Meta:")
+                    campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
+                                                                                          ["Facebook", "Instagram", "Google Ads", "LinkedIn"])
+                    campos_briefing['especificos']['segmentacao'] = criar_campo_selecionavel("Segmentação:")
+                    campos_briefing['especificos']['link_destino'] = criar_campo_selecionavel("Link de destino:", "text_input")
+    
+                elif tipo_briefing == "Manutenção de Site":
+                    st.markdown("**Descreva a demanda usando 5W2H:**")
+                    campos_briefing['especificos']['what'] = criar_campo_selecionavel("O que precisa ser feito?")
+                    campos_briefing['especificos']['why'] = criar_campo_selecionavel("Por que é necessário?")
+                    campos_briefing['especificos']['where'] = criar_campo_selecionavel("Onde deve ser implementado?")
+                    campos_briefing['especificos']['when'] = criar_campo_selecionavel("Quando precisa estar pronto?")
+                    campos_briefing['especificos']['who'] = criar_campo_selecionavel("Quem será impactado?")
+                    campos_briefing['especificos']['how'] = criar_campo_selecionavel("Como deve funcionar?")
+                    campos_briefing['especificos']['how_much'] = criar_campo_selecionavel("Qual o esforço estimado?")
+                    campos_briefing['especificos']['descricao_alteracao'] = criar_campo_selecionavel("Descrição detalhada da alteração:")
+                    campos_briefing['especificos']['prints'] = criar_campo_selecionavel("Anexar prints (se aplicável):", "file_uploader")
+                    campos_briefing['especificos']['link_referencia'] = criar_campo_selecionavel("Link de referência:", "text_input")
+                    
+                    if st.checkbox("É cliente novo?"):
+                        campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, CMS, etc.):")
+    
+                elif tipo_briefing == "Construção de Site":
+                    campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (servidor, nuvens, repositórios, CMS):")
+                    campos_briefing['especificos']['dominio'] = criar_campo_selecionavel("Domínio:", "text_input")
+                    campos_briefing['especificos']['prototipo'] = criar_campo_selecionavel("Protótipo em Figma:", "file_uploader")
+                    campos_briefing['especificos']['conteudos'] = criar_campo_selecionavel("Conteúdos (textos, banners, vídeos):")
+                    campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma:", "selectbox", 
+                                                                                         ["WordPress", "React", "Vue.js", "Outra"])
+                    campos_briefing['especificos']['hierarquia'] = criar_campo_selecionavel("Hierarquia de páginas:")
+                    
+                    if st.checkbox("Incluir otimização SEO?"):
+                        campos_briefing['especificos']['seo'] = True
+                        campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave principais:")
+                    else:
+                        campos_briefing['especificos']['seo'] = False
+    
+                elif tipo_briefing == "Landing Page":
+                    campos_briefing['especificos']['objetivo_lp'] = criar_campo_selecionavel("Objetivo da LP:")
+                    campos_briefing['especificos']['plataforma'] = criar_campo_selecionavel("Plataforma de desenvolvimento:", "text_input")
+                    campos_briefing['especificos']['integracao_site'] = criar_campo_selecionavel("Precisa integrar com site existente?", "selectbox", 
+                                                                                              ["Sim", "Não"])
+                    campos_briefing['especificos']['dados_coletar'] = criar_campo_selecionavel("Dados a serem coletados no formulário:")
+                    campos_briefing['especificos']['destino_dados'] = criar_campo_selecionavel("Onde os dados serão gravados:")
+                    campos_briefing['especificos']['kv_referencia'] = criar_campo_selecionavel("KV de referência:", "file_uploader")
+                    campos_briefing['especificos']['conteudos_pagina'] = criar_campo_selecionavel("Conteúdos da página:")
+                    campos_briefing['especificos']['menu'] = criar_campo_selecionavel("Menu/barra de navegação:")
+                    campos_briefing['especificos']['header_footer'] = criar_campo_selecionavel("Header e Footer:")
+                    campos_briefing['especificos']['comunicar'] = criar_campo_selecionavel("O que deve ser comunicado:")
+                    campos_briefing['especificos']['nao_comunicar'] = criar_campo_selecionavel("O que não deve ser comunicado:")
+                    campos_briefing['especificos']['observacoes'] = criar_campo_selecionavel("Observações:")
+    
+                elif tipo_briefing == "Dashboards":
+                    st.markdown("**Acessos:**")
+                    campos_briefing['especificos']['google_access'] = st.checkbox("Solicitar acesso Google Analytics")
+                    campos_briefing['especificos']['meta_access'] = st.checkbox("Solicitar acesso Meta Ads")
+                    campos_briefing['especificos']['outros_acessos'] = criar_campo_selecionavel("Outros acessos necessários:")
+                    
+                    st.markdown("**Requisitos do Dashboard:**")
+                    campos_briefing['especificos']['okrs'] = criar_campo_selecionavel("OKRs e metas:")
+                    campos_briefing['especificos']['dados_necessarios'] = criar_campo_selecionavel("Dados que precisam ser exibidos:")
+                    campos_briefing['especificos']['tipos_graficos'] = criar_campo_selecionavel("Tipos de gráficos preferidos:", "multiselect", 
+                                                                                              ["Barras", "Linhas", "Pizza", "Mapas", "Tabelas"])
+                    campos_briefing['especificos']['atualizacao'] = criar_campo_selecionavel("Frequência de atualização:", "selectbox", 
+                                                                                          ["Tempo real", "Diária", "Semanal", "Mensal"])
+    
+                elif tipo_briefing == "Social (Design)":
+                    campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Estático", "Motion"])
+                    campos_briefing['especificos']['kv'] = criar_campo_selecionavel("KV a ser seguido:", "file_uploader")
+                    campos_briefing['especificos']['linha_criativa'] = criar_campo_selecionavel("Linha criativa:")
+                    campos_briefing['especificos']['usar_fotos'] = criar_campo_selecionavel("Usar fotos?", "selectbox", ["Sim", "Não"])
+                    campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
+                    campos_briefing['especificos']['identidade_visual'] = criar_campo_selecionavel("Elementos de identidade visual:")
+                    campos_briefing['especificos']['texto_arte'] = criar_campo_selecionavel("Texto da arte:")
+    
+                elif tipo_briefing == "CRM (Design)":
+                    st.info("Layouts simples são mais eficientes para CRM!")
+                    campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências visuais:")
+                    campos_briefing['especificos']['tipografia'] = criar_campo_selecionavel("Tipografia preferencial:", "text_input")
+                    campos_briefing['especificos']['ferramenta_envio'] = criar_campo_selecionavel("Ferramenta de CRM que enviará a arte:", "text_input")
+                    campos_briefing['especificos']['formato_arte'] = criar_campo_selecionavel("Formato da arte:", "selectbox", ["Imagem", "HTML"])
+    
+                elif tipo_briefing == "Mídia (Design)":
+                    campos_briefing['especificos']['formato'] = criar_campo_selecionavel("Formato:", "selectbox", ["Horizontal", "Vertical", "Quadrado"])
+                    campos_briefing['especificos']['tipo_peca'] = criar_campo_selecionavel("Tipo de peça:", "selectbox", 
+                                                                                         ["Arte estática", "Carrossel", "Motion"])
+                    campos_briefing['especificos']['direcionamento'] = criar_campo_selecionavel("Direcionamento de conteúdo:")
+                    campos_briefing['especificos']['num_pecas'] = criar_campo_selecionavel("Número de peças:", "number_input", padrao=1)
+                    campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                    campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['referencias_concorrentes'] = criar_campo_selecionavel("Referências de concorrentes:")
+    
+                elif tipo_briefing == "KV/Identidade Visual":
+                    campos_briefing['especificos']['info_negocio'] = criar_campo_selecionavel("Informações do negócio:")
+                    campos_briefing['especificos']['referencias'] = criar_campo_selecionavel("Referências:")
+                    campos_briefing['especificos']['restricoes'] = criar_campo_selecionavel("O que não fazer (cores, elementos proibidos):")
+                    campos_briefing['especificos']['manual_anterior'] = criar_campo_selecionavel("Manual de marca anterior:", "file_uploader")
+                    campos_briefing['especificos']['imagem_transmitir'] = criar_campo_selecionavel("Qual imagem queremos transmitir?")
+                    campos_briefing['especificos']['tema_campanha'] = criar_campo_selecionavel("Tema da campanha:")
+                    campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                    campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
+                    campos_briefing['especificos']['banco_imagens'] = criar_campo_selecionavel("Tipo de imagens:", "selectbox", 
+                                                                                            ["Banco de imagens", "Pessoas reais"])
+                    campos_briefing['especificos']['limitacoes'] = criar_campo_selecionavel("Limitações de uso:")
+    
+                elif tipo_briefing == "Email Marketing (Redação)":
+                    campos_briefing['especificos']['objetivo_email'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos a serem divulgados:")
+                    campos_briefing['especificos']['estrutura'] = criar_campo_selecionavel("Estrutura desejada:")
+                    campos_briefing['especificos']['cta'] = criar_campo_selecionavel("CTA desejado:")
+                    campos_briefing['especificos']['link_cta'] = criar_campo_selecionavel("Link para o CTA:", "text_input")
+                    campos_briefing['especificos']['parte_campanha'] = criar_campo_selecionavel("Faz parte de campanha maior?", "selectbox", 
+                                                                                              ["Sim", "Não"])
+    
+                elif tipo_briefing == "Site (Redação)":
+                    campos_briefing['especificos']['objetivo_site'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['informacoes'] = criar_campo_selecionavel("Quais informações precisa ter:")
+                    campos_briefing['especificos']['links'] = criar_campo_selecionavel("Links necessários:")
+                    campos_briefing['especificos']['wireframe'] = criar_campo_selecionavel("Wireframe do site:", "file_uploader")
+                    campos_briefing['especificos']['tamanho_texto'] = criar_campo_selecionavel("Tamanho do texto:", "selectbox", 
+                                                                                            ["Curto", "Médio", "Longo"])
+                    
+                    if st.checkbox("É site novo?"):
+                        campos_briefing['especificos']['insumos'] = criar_campo_selecionavel("Insumos sobre a empresa/projeto:")
+    
+                elif tipo_briefing == "Campanha de Mídias (Redação)":
+                    campos_briefing['especificos']['objetivo_campanha'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['plataformas'] = criar_campo_selecionavel("Plataformas:", "multiselect", 
+                                                                                           ["Facebook", "Instagram", "LinkedIn", "Google"])
+                    campos_briefing['especificos']['palavras_chave'] = criar_campo_selecionavel("Palavras-chave:")
+                    campos_briefing['especificos']['tom_voz'] = criar_campo_selecionavel("Tom de voz:")
+                    campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                    campos_briefing['especificos']['cronograma'] = criar_campo_selecionavel("Cronograma:")
+    
+                elif tipo_briefing == "Relatórios":
+                    campos_briefing['especificos']['objetivo_relatorio'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['periodo_analise'] = criar_campo_selecionavel("Período de análise:")
+                    campos_briefing['especificos']['granularidade'] = criar_campo_selecionavel("Granularidade:", "selectbox", 
+                                                                                            ["Diária", "Semanal", "Mensal", "Trimestral"])
+                    campos_briefing['especificos']['metricas'] = criar_campo_selecionavel("Métricas a serem incluídas:")
+                    campos_briefing['especificos']['comparativos'] = criar_campo_selecionavel("Comparativos desejados:")
+    
+                elif tipo_briefing == "Estratégico":
+                    campos_briefing['especificos']['introducao'] = criar_campo_selecionavel("Introdução sobre a empresa:")
+                    campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                    campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                    campos_briefing['especificos']['objetivo_mkt'] = criar_campo_selecionavel("Objetivo de marketing:")
+                    campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
+                                                                                            ["Topo", "Meio", "Fundo"])
+                    campos_briefing['especificos']['canais'] = criar_campo_selecionavel("Canais disponíveis:", "multiselect", 
+                                                                                      ["Social", "Email", "Site", "Mídia Paga", "SEO"])
+                    campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
+                    campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
+                    campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
+                    campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
+                    campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
+                    campos_briefing['especificos']['materiais'] = criar_campo_selecionavel("Materiais de apoio:")
+    
+                elif tipo_briefing == "Concorrência":
+                    campos_briefing['especificos']['orcamento'] = criar_campo_selecionavel("Orçamento (R$):", "number_input")
+                    campos_briefing['especificos']['publico'] = criar_campo_selecionavel("Público-alvo:")
+                    campos_briefing['especificos']['objetivo'] = criar_campo_selecionavel("Objetivo:")
+                    campos_briefing['especificos']['etapas_funil'] = criar_campo_selecionavel("Etapas do funil:", "multiselect", 
+                                                                                            ["Topo", "Meio", "Fundo"])
+                    campos_briefing['especificos']['produtos'] = criar_campo_selecionavel("Produtos/portfólio:")
+                    campos_briefing['especificos']['metas'] = criar_campo_selecionavel("Metas e métricas:")
+                    campos_briefing['especificos']['concorrentes'] = criar_campo_selecionavel("Concorrentes:")
+                    campos_briefing['especificos']['acessos'] = criar_campo_selecionavel("Acessos (GA, Meta Ads, etc.):")
+                    campos_briefing['especificos']['expectativas'] = criar_campo_selecionavel("Expectativas de resultados:")
             
             # Botão para gerar o briefing
             if st.button("🔄 Gerar Briefing Completo", type="primary"):
