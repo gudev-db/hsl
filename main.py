@@ -687,7 +687,7 @@ with tab_briefing:
                     )
                         
                 except Exception as e:
-                    st.error(f"Erro ao gerar briefing
+                    st.error(f"Erro ao gerar briefing")
 
 
 with tab_resumo:
