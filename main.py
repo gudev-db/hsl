@@ -44,7 +44,7 @@ db_briefings = banco["briefings_hsl"]
 with open('data.txt', 'r') as file:
     conteudo = file.read()
 
-tab_chatbot, tab_aprovacao, tab_geracao, tab_briefing, tab_briefing_gerados, tab_resumo = st.tabs([
+tab_chatbot, tab_aprovacao, tab_geracao, tab_briefing,  tab_resumo = st.tabs([
     "💬 Chatbot Hospital Sírio Libanês", 
     "✅ Aprovação de Conteúdo", 
     "✨ Geração de Conteúdo",
