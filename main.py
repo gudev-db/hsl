@@ -737,7 +737,7 @@ with tab_briefing:
                         with col2:
                             if st.button("🗑️", key=f"del_{briefing['_id']}"):
                                 collection_briefings.delete_one({"_id": briefing['_id']})
-                                st.experimental_rerun()
+                                st.rerun()
     
     with col_preview:
         st.subheader("Pré-visualização do Briefing")
