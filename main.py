@@ -318,6 +318,7 @@ with tab_briefing:
         responsavel = st.text_input("Responsável pelo Briefing:")
         data_entrega = st.date_input("Data de Entrega Prevista:")
         objetivo_geral = st.text_area("Objetivo Geral:")
+        obs = st.text_area("Observações")
         
         # Seção dinâmica baseada no tipo de briefing
         st.subheader("Informações Específicas")
@@ -328,7 +329,8 @@ with tab_briefing:
                 "nome_projeto": nome_projeto,
                 "responsavel": responsavel,
                 "data_entrega": str(data_entrega),
-                "objetivo_geral": objetivo_geral
+                "objetivo_geral": objetivo_geral,
+                "obs": obs
             },
             "especificos": {}
         }
@@ -672,7 +674,8 @@ with tab_briefing:
                         "data_criacao": datetime.datetime.now(),
                         "data_entrega": campos_briefing['basicos']['data_entrega'],
                         "conteudo": resposta.text,
-                        "campos_preenchidos": campos_briefing
+                        "campos_preenchidos": campos_briefing,
+                        "obervacoes": obs,
                     }
                     collection_briefings.insert_one(briefing_data)
                     
