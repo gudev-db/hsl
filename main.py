@@ -338,59 +338,59 @@ with tab_briefing:
             
             # Função para criar campos dinâmicos com seleção
             # Primeiro, vamos modificar a função criar_campo_selecionavel para usar session_state
-    def criar_campo_selecionavel(rotulo, tipo="text_area", opcoes=None, padrao=None, key_suffix=""):
-        # Cria uma chave única baseada no rótulo e sufixo
-        key = f"{rotulo}_{key_suffix}_{tipo}"
-        
-        # Inicializa o valor no session_state se não existir
-        if key not in st.session_state:
-            st.session_state[key] = padrao if padrao is not None else ""
-        
-        col1, col2 = st.columns([4, 1])
-        valor = None
-        
-        with col1:
-            if tipo == "text_area":
-                valor = st.text_area(rotulo, value=st.session_state[key], key=f"input_{key}")
-            elif tipo == "text_input":
-                valor = st.text_input(rotulo, value=st.session_state[key], key=f"input_{key}")
-            elif tipo == "selectbox":
-                valor = st.selectbox(rotulo, opcoes, index=opcoes.index(st.session_state[key]) if st.session_state[key] in opcoes else 0, key=f"input_{key}")
-            elif tipo == "multiselect":
-                valor = st.multiselect(rotulo, opcoes, default=st.session_state[key], key=f"input_{key}")
-            elif tipo == "date_input":
-                valor = st.date_input(rotulo, value=st.session_state[key], key=f"input_{key}")
-            elif tipo == "number_input":
-                valor = st.number_input(rotulo, value=st.session_state[key], key=f"input_{key}")
-            elif tipo == "file_uploader":
-                return st.file_uploader(rotulo, key=f"input_{key}")  # Retorna direto pois não pode ser salvo no MongoDB
-        
-        with col2:
-            incluir = st.checkbox("Incluir", value=True, key=f"incluir_{key}")
-            auto_preencher = st.button("🪄", key=f"auto_{key}", help="Preencher automaticamente com LLM")
-        
-        if auto_preencher:
-            # Carrega contexto do data.txt
-            with open("data.txt", "r") as f:
-                contexto = f.read()
-            
-            prompt = f"Com base no seguinte contexto:\n{contexto}\n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês. Retorne APENAS o valor para o campo, sem comentários ou formatação adicional."
-            
-            try:
-                resposta = modelo_texto.generate_content(prompt)
-                # Atualiza o session_state com a resposta da LLM
-                st.session_state[key] = resposta.text
-                # Força o rerun para atualizar a interface
-                st.rerun()
-            except Exception as e:
-                st.error(f"Erro ao gerar sugestão: {str(e)}")
-                st.session_state[key] = ""
-        
-        # Atualiza o valor no session_state se foi modificado manualmente
-        if valor is not None and valor != st.session_state[key]:
-            st.session_state[key] = valor
-        
-        return st.session_state[key] if incluir else None
+            def criar_campo_selecionavel(rotulo, tipo="text_area", opcoes=None, padrao=None, key_suffix=""):
+                # Cria uma chave única baseada no rótulo e sufixo
+                key = f"{rotulo}_{key_suffix}_{tipo}"
+                
+                # Inicializa o valor no session_state se não existir
+                if key not in st.session_state:
+                    st.session_state[key] = padrao if padrao is not None else ""
+                
+                col1, col2 = st.columns([4, 1])
+                valor = None
+                
+                with col1:
+                    if tipo == "text_area":
+                        valor = st.text_area(rotulo, value=st.session_state[key], key=f"input_{key}")
+                    elif tipo == "text_input":
+                        valor = st.text_input(rotulo, value=st.session_state[key], key=f"input_{key}")
+                    elif tipo == "selectbox":
+                        valor = st.selectbox(rotulo, opcoes, index=opcoes.index(st.session_state[key]) if st.session_state[key] in opcoes else 0, key=f"input_{key}")
+                    elif tipo == "multiselect":
+                        valor = st.multiselect(rotulo, opcoes, default=st.session_state[key], key=f"input_{key}")
+                    elif tipo == "date_input":
+                        valor = st.date_input(rotulo, value=st.session_state[key], key=f"input_{key}")
+                    elif tipo == "number_input":
+                        valor = st.number_input(rotulo, value=st.session_state[key], key=f"input_{key}")
+                    elif tipo == "file_uploader":
+                        return st.file_uploader(rotulo, key=f"input_{key}")  # Retorna direto pois não pode ser salvo no MongoDB
+                
+                with col2:
+                    incluir = st.checkbox("Incluir", value=True, key=f"incluir_{key}")
+                    auto_preencher = st.button("🪄", key=f"auto_{key}", help="Preencher automaticamente com LLM")
+                
+                if auto_preencher:
+                    # Carrega contexto do data.txt
+                    with open("data.txt", "r") as f:
+                        contexto = f.read()
+                    
+                    prompt = f"Com base no seguinte contexto:\n{contexto}\n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês. Retorne APENAS o valor para o campo, sem comentários ou formatação adicional."
+                    
+                    try:
+                        resposta = modelo_texto.generate_content(prompt)
+                        # Atualiza o session_state com a resposta da LLM
+                        st.session_state[key] = resposta.text
+                        # Força o rerun para atualizar a interface
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Erro ao gerar sugestão: {str(e)}")
+                        st.session_state[key] = ""
+                
+                # Atualiza o valor no session_state se foi modificado manualmente
+                if valor is not None and valor != st.session_state[key]:
+                    st.session_state[key] = valor
+                
+                return st.session_state[key] if incluir else None
             
             # ========== SOCIAL ==========
             if tipo_briefing == "Post único":
