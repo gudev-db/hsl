@@ -366,7 +366,7 @@ with tab_briefing:
                         return st.file_uploader(rotulo, key=f"input_{key}")  # Retorna direto pois não pode ser salvo no MongoDB
                 
                 with col2:
-                    incluir = st.checkbox("Incluir", value=True, key=f"incluir_{key}")
+                    incluir = st.checkbox("", value=True, key=f"incluir_{key}")
                     auto_preencher = st.button("🪄", key=f"auto_{key}", help="Preencher automaticamente com LLM")
                 
                 if auto_preencher:
