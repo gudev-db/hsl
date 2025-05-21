@@ -368,7 +368,7 @@ with tab_briefing:
                     prompt = f"Com base no seguinte contexto:\n{contexto}\n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês."
                     resposta = modelo_texto.generate_content(prompt)
                     valor = resposta.text
-                    st.experimental_rerun()  # Atualiza a interface com o novo valor
+                    st.rerun()  # Atualiza a interface com o novo valor
                 
                 return valor if incluir else None
             
