@@ -7,7 +7,9 @@ import os
 from PIL import Image
 import requests
 import datetime
-
+import os
+from pymongo import MongoClient
+import requests
 
 
 
