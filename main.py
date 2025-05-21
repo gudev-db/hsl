@@ -375,7 +375,7 @@ with tab_briefing:
                     with open("data.txt", "r") as f:
                         contexto = f.read()
                     
-                    prompt = f"Com base no seguinte contexto:\n{contexto}\n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês. Retorne APENAS o valor para o campo, sem comentários ou formatação adicional."
+                    prompt = f"Com base no seguinte contexto:\n{contexto}\n\n E o objetivo do briefing {objetivo_geral} \n\nPreencha o campo '{rotulo}' para um briefing do tipo {tipo_briefing} no Hospital Sírio Libanês. Retorne APENAS o valor para o campo, sem comentários ou formatação adicional."
                     
                     try:
                         resposta = modelo_texto.generate_content(prompt)
