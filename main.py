@@ -711,7 +711,7 @@ with tab_briefing:
                 query["tipo"] = filtro_tipo
             
             # Buscar briefings
-            briefings_salvos = list(collection_briefings.find(query).sort("data_criacao", -1).limit(50)
+            briefings_salvos = list(collection_briefings.find(query).sort("data_criacao", -1).limit(50))
             
             if not briefings_salvos:
                 st.info("Nenhum briefing encontrado com os filtros selecionados")
