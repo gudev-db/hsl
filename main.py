@@ -304,10 +304,9 @@ with tab_briefing:
         ]
     }
 
-    # Layout em colunas
-    col_config, col_preview = st.columns([1, 2])
     
-    with col_config:
+    
+with col_config:
         # Aba de configuração
         tab_new, tab_saved = st.tabs(["Novo Briefing", "Briefings Salvos"])
         
@@ -681,11 +680,11 @@ with tab_briefing:
                         }
                         collection_briefings.insert_one(briefing_data)
                         
-                        with col_preview:
-                            st.subheader(f"Briefing {tipo_briefing} - {campos_briefing['basicos']['nome_projeto']}")
-                            st.markdown(resposta.text)
+                    
+                st.subheader(f"Briefing {tipo_briefing} - {campos_briefing['basicos']['nome_projeto']}")
+                st.markdown(resposta.text)
                             
-                            st.download_button(
+                st.download_button(
                                 label="📥 Download do Briefing",
                                 data=resposta.text,
                                 file_name=f"briefing_{tipo_briefing.lower().replace(' ', '_')}_{campos_briefing['basicos']['nome_projeto'].lower().replace(' ', '_')}.txt",
