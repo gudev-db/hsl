@@ -308,7 +308,7 @@ with tab_briefing:
     
    
         # Aba de configuração
-    tab_new, tab_saved = st.tabs(["Novo Briefing", "Briefings Salvos"])
+        tab_new, tab_saved = st.tabs(["Novo Briefing", "Briefings Salvos"])
         
         with tab_new:
             # Seleção hierárquica do tipo de briefing
